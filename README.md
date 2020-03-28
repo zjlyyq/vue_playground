@@ -352,3 +352,151 @@ new Vue({
     <img src="./static/imgs/lifecycle.png"/>
 </div>
 
+### 模板语法
+
+Vue.js 使用了基于 HTML 的模板语法，允许开发者声明式地将 DOM 绑定至底层 Vue 实例的数据。所有 Vue.js 的模板都是合法的 HTML，所以能被遵循规范的浏览器和 HTML 解析器解析。
+
+> 从根元素内部开始，所有的语法就都是模板范畴了，都适用于模板语法。
+
+在底层的实现上，Vue 将模板编译成虚拟 DOM 渲染函数。结合响应系统，Vue 能够智能地计算出最少需要重新渲染多少组件，并把 DOM 操作次数减到最少。
+
+如果你熟悉虚拟 DOM 并且偏爱 JavaScript 的原始力量，你也可以不用模板，[直接写渲染 (render) 函数](https://cn.vuejs.org/v2/guide/render-function.html)，使用可选的 JSX 语法。
+
+#### 插值
+
+##### 文本
+
+1. Mustache 语法:双大括号`{{}}`
+2. `v-once`
+
+##### 原始HTML
+
+`v-html`
+
+##### HTML attribute
+
+ustache 语法不能作用在 HTML attribute 上，遇到这种情况应该使用 [`v-bind` 指令](https://cn.vuejs.org/v2/api/#v-bind)：
+
+`v-bind`
+
+```html
+<button v-bind:class="btPrimaryClass">
+  取消
+</button>
+<button v-bind:class="!submitFlag?'btn':btPrimaryClass">
+  提交
+</button>
+```
+
+<div>
+  <iframe height="265" style="width: 100%;" scrolling="no" title="vue模板语法" src="https://codepen.io/zjlyyq/embed/WNvLgjV?height=265&theme-id=light&default-tab=html,result" frameborder="no" allowtransparency="true" allowfullscreen="true">
+  See the Pen <a href='https://codepen.io/zjlyyq/pen/WNvLgjV'>vue模板语法</a> by Zhang Jialu
+  (<a href='https://codepen.io/zjlyyq'>@zjlyyq</a>) on <a href='https://codepen.io'>CodePen</a>.
+</iframe>
+</div>
+
+##### 使用 JavaScript 表达式
+
+迄今为止，在我们的模板中，我们一直都只绑定简单的属性键值。但实际上，对于所有的数据绑定，Vue.js 都提供了完全的 JavaScript 表达式支持。
+
+```html
+{{ number + 1 }}
+
+{{ ok ? 'YES' : 'NO' }}
+
+{{ message.split('').reverse().join('') }}
+
+<div v-bind:id="'list-' + id"></div>
+```
+
+#### 指令
+
+指令是指带有前缀 `v-` 的 `attribute` ，值预期是**单个的JavaScript表达式**（`v-for`是个例外）。指令的作用是，当表达式的值发生变化时，将其产生的连带影响，响应式地作用于 DOM。
+
+例如：
+
+```html
+<p v-if="seen">现在你看到我了</p>
+```
+
+这里，`v-if` 指令将根据表达式 `seen` 的值的真假来插入/移除 `p` 元素。
+
+##### 参数
+
+一些指令能够接收一个“参数”，在指令名称之后以冒号表示。例如，`v-bind` 指令可以用于响应式地更新 HTML attribute：
+
+```html
+<a v-bind:href="url">...</a>
+<button v-bind:class="!submitFlag?'btn':btPrimaryClass">
+  提交
+</button>
+```
+
+在这里 `href` 是参数，告知 `v-bind` 指令将该元素的 `href` attribute 与表达式 `url` 的值绑定。
+
+另一个指令是`v-on`，它用于监听 DOM 事件：
+
+```html
+<a v-on:click="doSomething">...</a>
+```
+
+##### 动态参数
+
+> 2.6.0 新增
+
+从 2.6.0 开始，可以用方括号括起来的 JavaScript 表达式作为一个指令的参数：
+
+```html
+<!--
+注意，参数表达式的写法存在一些约束，如之后的“对动态参数表达式的约束”章节所述。
+-->
+<a v-bind:[attributeName]="url"> ... </a>
+```
+
+这里的 `attributeName` 会被作为一个 JavaScript 表达式进行动态求值，求得的值将会作为最终的参数来使用。例如，如果你的 Vue 实例有一个 `data` 属性 `attributeName`，其值为 `"href"`，那么这个绑定将等价于 `v-bind:href`。
+
+同样地，你可以使用动态参数为一个动态的事件名绑定处理函数：
+
+```html
+<a v-on:[eventName]="doSomething"> ... </a>
+```
+
+在这个示例中，当 `eventName` 的值为 `"focus"` 时，`v-on:[eventName]` 将等价于 `v-on:focus`。
+
+###### 对动态参数的值的约束
+
+动态参数预期会求出一个字符串，异常情况下值为 `null`。这个特殊的 `null` 值可以被显性地用于移除绑定。任何其它非字符串类型的值都将会触发一个警告。
+
+###### 对动态参数表达式的约束
+
+动态参数表达式有一些语法约束，因为某些字符，如空格和引号，放在 HTML attribute 名里是无效的。例如：
+
+```html
+<!-- 这会触发一个编译警告 -->
+<a v-bind:['foo' + bar]="value"> ... </a>
+```
+
+变通的办法是使用没有空格或引号的表达式，或用计算属性替代这种复杂表达式。
+
+在 DOM 中使用模板时 (直接在一个 HTML 文件里撰写模板)，还需要避免使用大写字符来命名键名，因为浏览器会把 attribute 名全部强制转为小写：
+
+```html
+<!--
+在 DOM 中使用模板时这段代码会被转换为 `v-bind:[someattr]`。
+除非在实例中有一个名为“someattr”的 property，否则代码不会工作。
+-->
+<a v-bind:[someAttr]="value"> ... </a>
+```
+
+##### 修饰符
+
+```html
+<form v-on:submit.prevent="onSubmit">...</form>
+```
+
+#### 缩写
+
+`v-bind` = `:`
+
+`v-on `=`@`
+
