@@ -4,12 +4,15 @@ Vue.component( 'todo-item',{
     // el: "#todo",
     template: `
     <div>
-        {{context}}
+        {{message1 + ': '}}{{context}}
         <p>截止时间:{{date}}</p>
+
     </div>
     `,
-    data: {
-        message1: '这是一个to-do item待办项'
+    data() {
+        return {
+            message1: '这是一个to-do item待办项'
+        }
     },
     props: {
         'context': {
@@ -36,6 +39,11 @@ const app = new Vue({
             {
                 id: 2,
                 context: '写字',
+                date: '2020/03/21'
+            },
+            {
+                id: 3,
+                context: '敲代码',
                 date: '2020/03/21'
             }
         ]
