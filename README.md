@@ -156,3 +156,66 @@ Vue.component( 'todo-item',{
 >
 >    <img src="./static/imgs/template_error.png"/>
 
+#### 使用`props`传参
+
+```js
+const Vue = require('vue');
+
+Vue.component( 'todo-item',{
+    // el: "#todo",
+    template: `
+    <div>
+        {{context}}
+        <p>截止时间:{{date}}</p>
+    </div>
+    `,
+    data: {
+        message1: '这是一个to-do item待办项'
+    },
+    props: {
+        'context': {
+            type: String,
+            default: ""
+        },
+        "date": {
+            type: String,
+            default: new Date().toLocaleDateString()
+        }
+    }
+})
+```
+
+> props接受两种形式：
+>
+> 1. 数组
+>
+>    ```js
+>    props: ['context','date']
+>    ```
+>
+> 2. 对象
+>
+>    ```js
+>    props: {
+>            'context': {
+>                type: String,
+>                default: ""
+>            },
+>            "date": {
+>                type: String,
+>                default: new Date().toLocaleDateString()
+>            }
+>        }
+>    ```
+
+#### Vue组件 和自定义元素的关系
+
+你可能已经注意到 Vue 组件非常类似于**自定义元素**——它是 [Web 组件规范](https://www.w3.org/wiki/WebComponents/)的一部分，这是因为 Vue 的组件语法部分参考了该规范。例如 Vue 组件实现了 [Slot API](https://github.com/w3c/webcomponents/blob/gh-pages/proposals/Slots-Proposal.md) 与 `is` attribute。但是，还是有几个关键差别：
+
+1. Web Components 规范已经完成并通过，但未被所有浏览器原生实现。目前 Safari 10.1+、Chrome 54+ 和 Firefox 63+ 原生支持 Web Components。相比之下，Vue 组件不需要任何 polyfill，并且在所有支持的浏览器 (IE9 及更高版本) 之下表现一致。必要时，Vue 组件也可以包装于原生自定义元素之内。
+2. Vue 组件提供了纯自定义元素所不具备的一些重要功能，最突出的是跨组件数据流、自定义事件通信以及构建工具集成。
+
+虽然 Vue 内部没有使用自定义元素，不过在应用使用自定义元素、或以自定义元素形式发布时，[依然有很好的互操作性](https://custom-elements-everywhere.com/#vue)。Vue CLI 也支持将 Vue 组件构建成为原生的自定义元素。
+
+> 关键词：`自定义元素`
+
