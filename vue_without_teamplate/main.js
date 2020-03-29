@@ -29,6 +29,7 @@ const app = new Vue({
     el: "#app",
     data: {
         message: "hello vue!",
+        test: 'test',
         creatingTime: '页面加载于 ' + new Date().toLocaleString(),
         todoList: [
             {
@@ -47,7 +48,29 @@ const app = new Vue({
                 date: '2020/03/21'
             }
         ]
-    }
+    },
+    computed: {
+        // 计算属性的 getter
+        reversedMessage: function() {
+            console.log('reversedMessage called');
+            // `this` 指向 vm 实例
+            return this.message.split(' ').reverse().join('');
+        }
+    },
+    methods: {
+        reversedMessageFunc() {
+            console.log('reversedMessageFunc called');
+            return this.message.split(' ').reverse().join('');
+        },
+        changeMessage() {
+            console.log('changeMessage called');
+            this.message += ' zjl';
+        },
+        testFun(){
+            this.text += ' test';
+            console.log('test called');
+        }
+    },
 })
 
 const app2 = new Vue({

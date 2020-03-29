@@ -19,6 +19,11 @@
             >
             </todo-item>
         </ol>
+        <p>Original message: {{ message }}</p>
+        <p>Computed reversed message: {{ reversedMessage }}</p>
+        <p>Computed reversed messagetion by Func: {{ reversedMessageFunc() }}</p>
+        <button @click="changeMessage">测试计算属性/函数</button>
+        <p>test message: {{ test }}</p><button @click="testFun">testFun</button>
     </div>
     <div id="todo">
         {{message}}
