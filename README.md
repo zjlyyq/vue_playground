@@ -922,7 +922,7 @@ vm.formInfos = vm.formInfos.filter(function(item){
 
 举个例子：
 
-```
+```js
 var vm = new Vue({
   data: {
     items: ['a', 'b', 'c']
@@ -932,3 +932,61 @@ vm.items[1] = 'x' // 不是响应性的
 vm.items.length = 2 // 不是响应性的
 ```
 
+对于已经创建的实例，Vue 不允许动态添加根级别的响应式属性。但是，可以使用 `Vue.set(object, propertyName, value)` 方法向嵌套对象添加响应式属性。例如，对于：
+
+```js
+var vm = new Vue({
+  data: {
+    userProfile: {
+      name: 'Anika'
+    }
+  }
+})
+```
+
+你可以添加一个新的 `age` 属性到嵌套的 `userProfile` 对象：
+
+```js
+Vue.set(vm.userProfile, 'age', 27)
+```
+
+你还可以使用 `vm.$set` 实例方法，它只是全局 `Vue.set` 的别名：
+
+```
+vm.$set(vm.userProfile, 'age', 27)
+```
+
+有时你可能需要为已有对象赋值多个新属性，比如使用 `Object.assign()` 或 `_.extend()`。在这种情况下，你应该用两个对象的属性创建一个新的对象。所以，如果你想添加新的响应式属性，不要像这样：
+
+```js
+Object.assign(vm.userProfile, {
+  age: 27,
+  favoriteColor: 'Vue Green'
+})
+```
+
+你应该这样做：
+
+```js
+vm.userProfile = Object.assign({}, vm.userProfile, {
+  age: 27,
+  favoriteColor: 'Vue Green'
+})
+```
+
+##### 在组件上使用`v-for`
+
+> 2.2.0+ 的版本里，当在组件上使用 `v-for` 时，`key` 现在是必须的。
+
+然而，任何数据都不会被自动传递到组件里，因为组件有自己独立的作用域。为了把迭代数据传递到组件里，我们要使用 prop：
+
+```html
+<my-component
+  v-for="(item, index) in items"
+  v-bind:item="item"
+  v-bind:index="index"
+  v-bind:key="item.id"
+></my-component>
+```
+
+不自动将 `item` 注入到组件里的原因是，这会使得组件与 `v-for` 的运作紧密耦合。明确组件数据的来源能够使组件在其他场合重复使用。
