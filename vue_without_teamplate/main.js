@@ -47,6 +47,27 @@ const app = new Vue({
                 context: '敲代码',
                 date: '2020/03/21'
             }
+        ],
+        showInfo: false,
+        showList: [
+            {
+                id:1,
+                context:'读书',
+                date: '2020/03/29',
+                showFlag: true
+            },
+            {
+                id: 2,
+                context: '写字',
+                date: '2020/03/21',
+                showFlag: false
+            },
+            {
+                id: 3,
+                context: '敲代码',
+                date: '2020/03/21',
+                showFlag: true
+            }
         ]
     },
     computed: {

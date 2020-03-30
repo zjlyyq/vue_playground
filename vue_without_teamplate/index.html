@@ -24,6 +24,15 @@
         <p>Computed reversed messagetion by Func: {{ reversedMessageFunc() }}</p>
         <button @click="changeMessage">测试计算属性/函数</button>
         <p>test message: {{ test }}</p><button @click="testFun">testFun</button>
+        <div v-show="showInfo">
+            ok
+        </div>
+        <div v-show="!showInfo">
+            not ok 🤐
+        </div>
+        <ul>
+            <li v-for="item in showList" v-if="item.showFlag" :key="item.id">{{item.context}}</li>
+        </ul>
     </div>
     <div id="todo">
         {{message}}
