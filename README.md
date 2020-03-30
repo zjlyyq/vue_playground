@@ -798,3 +798,137 @@ Vue 会尽可能高效地渲染元素，通常会复用已有元素而不是从�
 >   (<a href='https://codepen.io/zjlyyq'>@zjlyyq</a>) on <a href='https://codepen.io'>CodePen</a>.
 > </iframe>
 > </div>
+
+### 列表渲染
+
+#### 用 `v-for` 把一个数组对应为一组元素
+
+`v-for` 还支持一个可选的第二个参数，即当前项的索引。
+
+<div>
+    <iframe height="265" style="width: 100%;" scrolling="no" title="v-for" src="https://codepen.io/zjlyyq/embed/zYGeobM?height=265&theme-id=dark&default-tab=html,result" frameborder="no" allowtransparency="true" allowfullscreen="true">
+  See the Pen <a href='https://codepen.io/zjlyyq/pen/zYGeobM'>v-for</a> by Zhang Jialu
+  (<a href='https://codepen.io/zjlyyq'>@zjlyyq</a>) on <a href='https://codepen.io'>CodePen</a>.
+</iframe>
+</div>
+
+#### 在 `v-for` 里使用对象
+
+你也可以用 `v-for` 来遍历一个对象的属性。
+
+<div>
+    <iframe height="265" style="width: 100%;" scrolling="no" title="在 `v-for` 里使用对象" src="https://codepen.io/zjlyyq/embed/NWqobVg?height=265&theme-id=dark&default-tab=js,result" frameborder="no" allowtransparency="true" allowfullscreen="true">
+  See the Pen <a href='https://codepen.io/zjlyyq/pen/NWqobVg'>在 `v-for` 里使用对象</a> by Zhang Jialu
+  (<a href='https://codepen.io/zjlyyq'>@zjlyyq</a>) on <a href='https://codepen.io'>CodePen</a>.
+</iframe>
+</div>
+
+你也可以提供第二个的参数为 property 名称 (也就是键名)：
+
+<div>
+ <iframe height="265" style="width: 100%;" scrolling="no" title="在 `v-for` 里使用对象2" src="https://codepen.io/zjlyyq/embed/mdJvONP?height=265&theme-id=dark&default-tab=html,result" frameborder="no" allowtransparency="true" allowfullscreen="true">
+  See the Pen <a href='https://codepen.io/zjlyyq/pen/mdJvONP'>在 `v-for` 里使用对象2</a> by Zhang Jialu
+  (<a href='https://codepen.io/zjlyyq'>@zjlyyq</a>) on <a href='https://codepen.io'>CodePen</a>.
+</iframe>
+</div>
+
+还可以用第三个参数作为索引：
+
+<div>
+    <iframe height="265" style="width: 100%;" scrolling="no" title="在 `v-for` 里使用对象3" src="https://codepen.io/zjlyyq/embed/rNVPWXq?height=265&theme-id=dark&default-tab=html,result" frameborder="no" allowtransparency="true" allowfullscreen="true">
+  See the Pen <a href='https://codepen.io/zjlyyq/pen/rNVPWXq'>在 `v-for` 里使用对象3</a> by Zhang Jialu
+  (<a href='https://codepen.io/zjlyyq'>@zjlyyq</a>) on <a href='https://codepen.io'>CodePen</a>.
+</iframe>
+</div>
+
+> 在遍历对象时，会按 `Object.keys()` 的结果遍历，但是**不能**保证它的结果在不同的 JavaScript 引擎下都一致。
+>
+> > `Object.keys()` 方法会返回一个由一个给定对象的自身可枚举属性组成的数组，数组中属性名的排列顺序和使用 [`for...in`](https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Statements/for...in) 循环遍历该对象时返回的顺序一致 。
+
+#### 维护状态
+
+当 Vue 正在更新使用 `v-for` 渲染的元素列表时，它默认使用“就地更新”的策略。如果数据项的顺序被改变，Vue 将不会移动 DOM 元素来匹配数据项的顺序，而是就地更新每个元素，并且确保它们在每个索引位置正确渲染。
+
+这个默认的模式是高效的，但是**只适用于不依赖子组件状态或临时 DOM 状态 (例如：表单输入值) 的列表渲染输出**。
+
+看下面这个例子（无法显示的平台可以点击此 [链接](https://codepen.io/zjlyyq/pen/MWwLJQL)):
+
+<div>
+    <iframe height="265" style="width: 100%;" scrolling="no" title="MWwLJQL" src="https://codepen.io/zjlyyq/embed/MWwLJQL?height=265&theme-id=dark&default-tab=js,result" frameborder="no" allowtransparency="true" allowfullscreen="true">
+  See the Pen <a href='https://codepen.io/zjlyyq/pen/MWwLJQL'>MWwLJQL</a> by Zhang Jialu
+  (<a href='https://codepen.io/zjlyyq'>@zjlyyq</a>) on <a href='https://codepen.io'>CodePen</a>.
+</iframe>
+</div>
+
+上面这个例子中，点击了按钮后触发了`addItem` 函数，在列表头部插入了一个新数组元素，然而，vue 仅仅更新了`label` 内容，`username`的输入内容并没有移动到第二行。这就是所谓的`原地更新`。仅仅更新了列表内容的字段，并没有移动DOM顺序。
+
+为了给 Vue 一个提示，以便它能跟踪每个节点的身份，从而重用和重新排序现有元素，你需要为每项提供一个唯一 `key` 属性：
+
+```html
+<div v-for="item in items" v-bind:key="item.id">
+  <!-- 内容 -->
+</div>
+```
+
+<div>
+    <iframe height="265" style="width: 100%;" scrolling="no" title="WNvPpoW" src="https://codepen.io/zjlyyq/embed/WNvPpoW?height=265&theme-id=dark&default-tab=js,result" frameborder="no" allowtransparency="true" allowfullscreen="true">
+  See the Pen <a href='https://codepen.io/zjlyyq/pen/WNvPpoW'>WNvPpoW</a> by Zhang Jialu
+  (<a href='https://codepen.io/zjlyyq'>@zjlyyq</a>) on <a href='https://codepen.io'>CodePen</a>.
+</iframe>
+</div>
+
+建议尽可能在使用 `v-for` 时提供 `key` attribute，除非遍历输出的 DOM 内容非常简单，或者是刻意依赖默认行为以获取性能上的提升。
+
+因为它是 Vue 识别节点的一个通用机制，`key` 并不仅与 `v-for` 特别关联。后面我们将在指南中看到，它还具有其它用途。
+
+> 不要使用对象或数组之类的非基本类型值作为 `v-for` 的 `key`。请用字符串或数值类型的值。
+
+更多 `key` attribute 的细节用法请移步至 [`key` 的 API 文档](https://cn.vuejs.org/v2/api/#key)。
+
+#### 数组更新检测
+
+##### 变异方法(mutation method)
+
+Vue 将被侦听的数组的变异方法进行了包裹，所以它们也将会触发视图更新。这些被包裹过的方法包括：
+
+- `push()`
+- `pop()`
+- `shift()`
+- `unshift()`
+- `splice()`
+- `sort()`
+- `reverse()`
+
+可以打开控制台，对前面例子的 `formInfos` 数组尝试调用变异方法。比如输入`$vm.formInfos.push(...)`。
+
+##### 替换数组
+
+变异方法，顾名思义，会改变调用了这些方法的原始数组。相比之下，也有非变异 (non-mutating method) 方法，例如 `filter()`、`concat()` 和 `slice()` 。它们不会改变原始数组，而**总是返回一个新数组**。当使用非变异方法时，可以用新数组替换旧数组：
+
+```js
+vm.formInfos = vm.formInfos.filter(function(item){
+	return item.label.match('email');
+})
+```
+
+你可能认为这将导致 Vue 丢弃现有 DOM 并重新渲染整个列表。幸运的是，事实并非如此。Vue 为了使得 DOM 元素得到最大范围的重用而实现了一些智能的启发式方法，所以用一个含有相同元素的数组去替换原来的数组是非常高效的操作。
+
+##### 注意事项
+
+由于 JavaScript 的限制，Vue **不能**检测以下数组的变动：
+
+1. 当你利用索引直接设置一个数组项时，例如：`vm.items[indexOfItem] = newValue`
+2. 当你修改数组的长度时，例如：`vm.items.length = newLength`
+
+举个例子：
+
+```
+var vm = new Vue({
+  data: {
+    items: ['a', 'b', 'c']
+  }
+})
+vm.items[1] = 'x' // 不是响应性的
+vm.items.length = 2 // 不是响应性的
+```
+

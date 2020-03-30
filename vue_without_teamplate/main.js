@@ -25,7 +25,7 @@ Vue.component( 'todo-item',{
         }
     }
 })
-const app = new Vue({
+const vm = new Vue({
     el: "#app",
     data: {
         message: "hello vue!",
@@ -88,7 +88,7 @@ const app = new Vue({
             this.message += ' zjl';
         },
         testFun(){
-            this.text += ' test';
+            this.test += ' test';
             console.log('test called');
         }
     },
@@ -100,3 +100,10 @@ const app2 = new Vue({
         message: "Another Vue!",
     }
 })
+
+console.log(vm.showList);
+setTimeout(()=>{
+    vm.todoList = vm.todoList.filter(function(item){
+        return item.id > 1;
+    })
+},3000)
