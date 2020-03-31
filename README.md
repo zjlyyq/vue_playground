@@ -5,6 +5,7 @@
     <img src="./static/imgs/vue-bg.jpg"/>
 </div>
 
+## 基础
 
 ### 安装
 
@@ -990,3 +991,12 @@ vm.userProfile = Object.assign({}, vm.userProfile, {
 ```
 
 不自动将 `item` 注入到组件里的原因是，这会使得组件与 `v-for` 的运作紧密耦合。明确组件数据的来源能够使组件在其他场合重复使用。
+
+### 事件处理
+
+......
+
+### 表单输入绑定
+
+......
+
