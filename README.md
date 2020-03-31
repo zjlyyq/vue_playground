@@ -990,3 +990,77 @@ vm.userProfile = Object.assign({}, vm.userProfile, {
 ```
 
 不自动将 `item` 注入到组件里的原因是，这会使得组件与 `v-for` 的运作紧密耦合。明确组件数据的来源能够使组件在其他场合重复使用。
+
+### 组件基础
+
+组件是可复用的Vue实例，且带有名字。
+
+因为组件是可复用的 Vue 实例，所以它们与 `new Vue` 接收相同的选项，例如 `data`、`computed`、`watch`、`methods` 以及生命周期钩子等。仅有的例外是像 `el` 这样根实例特有的选项。
+
+**一个组件的 `data` 选项必须是一个函数**，因此每个实例可以维护一份被返回对象的独立的拷贝。
+
+如果 Vue 没有这条规则，点击一个按钮就可能会像如下代码一样影响到*其它所有实例*：
+
+#### 全局注册和局部注册
+
+前面讲到的组件都是通过全局注册的
+
+```js
+Vue.component('my-component-name', {
+  // ... options ...
+})
+```
+
+全局注册的组件可以用在其被注册之后的任何 (通过 `new Vue`) 新创建的 Vue 根实例，也包括其组件树中的所有子组件的模板中。
+
+#### 单个根元素
+
+**每个组件必须只有一个根元素**
+
+#### 在组件上使用`v-model`
+
+自定义事件也可以用于创建支持 `v-model` 的自定义输入组件。实际上：
+
+```html
+<input v-model="searchText">
+```
+
+等价于：
+
+```html
+<input
+  v-bind:value="searchText"
+  v-on:input="searchText = $event.target.value"
+>
+```
+
+当用在组件上时，`v-model` 则会这样：
+
+```html
+<custom-input
+  v-bind:value="searchText"
+  v-on:input="searchText = $event"
+></custom-input>
+```
+
+为了让它正常工作，这个组件内的 `<input>` 必须：
+
+- 将其 `value` attribute 绑定到一个名叫 `value` 的 prop 上
+- 在其 `input` 事件被触发时，将新的值通过自定义的 `input` 事件抛出
+
+或者在组件中直接在`input`上使用`v-model`
+
+```js
+Vue.component("custom-input", {
+  props: ["value"],
+  template: `<input v-model="value">`
+});
+```
+
+<div>
+    <iframe height="265" style="width: 100%;" scrolling="no" title="组件使用v-model" src="https://codepen.io/zjlyyq/embed/NWqoJxv?height=265&theme-id=dark&default-tab=js,result" frameborder="no" allowtransparency="true" allowfullscreen="true">
+  See the Pen <a href='https://codepen.io/zjlyyq/pen/NWqoJxv'>组件使用v-model</a> by Zhang Jialu
+  (<a href='https://codepen.io/zjlyyq'>@zjlyyq</a>) on <a href='https://codepen.io'>CodePen</a>.
+</iframe>
+</div>
+
