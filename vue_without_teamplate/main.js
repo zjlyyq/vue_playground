@@ -1,29 +1,56 @@
 const Vue = require('vue');
+// var todoItem = require('todo-item');
+// Vue.component( 'todo-item',{
+//     // el: "#todo",
+//     template: `
+//     <div>
+//         {{message1 + ': '}}{{context}}
+//         <p>截止时间:{{publishDate}}</p>
 
-Vue.component( 'todo-item',{
-    // el: "#todo",
-    template: `
-    <div>
-        {{message1 + ': '}}{{context}}
-        <p>截止时间:{{date}}</p>
-
-    </div>
-    `,
-    data() {
-        return {
-            message1: '这是一个to-do item待办项'
-        }
-    },
-    props: {
-        'context': {
-            type: String,
-            default: ""
+//     </div>
+//     `,
+//     data() {
+//         return {
+//             message1: '这是一个to-do item待办项'
+//         }
+//     },
+//     props: {
+//         'context': {
+//             type: String,
+//             default: ""
+//         },
+//         "publishDate": {
+//             type: String,
+//             default: new Date().toLocaleDateString()
+//         }
+//     }
+// })
+Vue.component('todo-item', function (resolve, rejected) {
+    resolve({
+        // el: "#todo",
+        template: `
+        <div>
+            {{message1 + ': '}}{{context}}
+            <p>截止时间:{{publishDate}}</p>
+    
+        </div>
+        `,
+        data() {
+            return {
+                message1: '这是一个to-do item待办项'
+            }
         },
-        "date": {
-            type: String,
-            default: new Date().toLocaleDateString()
+        props: {
+            'context': {
+                type: String,
+                default: ""
+            },
+            "publishDate": {
+                type: String,
+                default: new Date().toLocaleDateString()
+            }
         }
-    }
+    })
 })
 const vm = new Vue({
     el: "#app",

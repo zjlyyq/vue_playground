@@ -1332,3 +1332,344 @@ requireComponent.keys().forEach(fileName => {
 
 记住**全局注册的行为必须在根 Vue 实例 (通过 `new Vue`) 创建之前发生**。
 
+### prop
+
+#### Prop的大小写
+
+**HTML 中的 attribute 名是大小写不敏感的**，所以浏览器会把所有大写字符解释为小写字符。这意味着当你使用 DOM 中的模板时，camelCase (驼峰命名法) 的 prop 名需要使用其等价的 kebab-case (短横线分隔命名) 命名:
+
+如果使用字符串模板，那么这个限制就不存在了。
+
+```vue
+Vue.component( 'todo-item',{
+    // el: "#todo",
+    template: `
+    <div>
+        {{message1 + ': '}}{{context}}
+        <p>截止时间:{{publishDate}}</p>
+
+    </div>
+    `,
+    data() {
+        return {
+            message1: '这是一个to-do item待办项'
+        }
+    },
+    props: {
+        'context': {
+            type: String,
+            default: ""
+        },
+        "publishDate": {
+            type: String,
+            default: new Date().toLocaleDateString()
+        }
+    }
+})
+```
+
+```html
+<ol>
+    <todo-item 
+        v-for="item in todoList" 
+        :key="item.id" 
+        :context="item.context"
+        :publish-date="item.date"
+    >
+    </todo-item>
+</ol>
+```
+
+> 总结：凡是在js中使用*驼峰命名法*命名的变量，在html中都得用*短横线分割命名法*替代。
+
+#### Prop类型
+
+##### 字符串数组形式
+
+```js
+props: ['title', 'likes', 'isPublished', 'commentIds', 'author']
+```
+
+##### 对象形式
+
+ 指定每个prop的值类型
+
+```json
+props: {
+  title: String,
+  likes: Number,
+  isPublished: Boolean,
+  commentIds: Array,
+  author: Object,
+  callback: Function,
+  contactsPromise: Promise // or any other constructor
+}
+```
+
+#### 传递静态或动态 Prop
+
+静态传入
+
+```
+<blog-post title="My journey with Vue"></blog-post>
+```
+
+动态传入
+
+```
+<blog-post :title="My journey with Vue"></blog-post>
+```
+
+在上述两个示例中，我们传入的值都是字符串类型的，但实际上*任何*类型的值都可以传给一个 prop。
+
+##### 传入非字符串类型，以数字为例
+
+```html
+<!-- 即便 `42` 是静态的，我们仍然需要 `v-bind` 来告诉 Vue -->
+<!-- 这是一个 JavaScript 表达式而不是一个字符串。-->
+<blog-post v-bind:likes="42"></blog-post>
+```
+
+#### 单向数据流
+
+所有的 prop 都使得其父子 prop 之间形成了一个**单向下行绑定**：父级 prop 的更新会向下流动到子组件中，但是反过来则不行。这样会防止从子组件意外改变父级组件的状态，从而导致你的应用的数据流向难以理解。
+
+额外的，每次父级组件发生更新时，子组件中所有的 prop 都将会刷新为最新的值。这意味着你**不**应该在一个子组件内部改变 prop。如果你这样做了，Vue 会在浏览器的控制台中发出警告。
+
+当需要改变prop时：
+
+1. **这个 prop 用来传递一个初始值；这个子组件接下来希望将其作为一个本地的 prop 数据来使用。**在这种情况下，最好定义一个本地的 data 属性并将这个 prop 用作其初始值：
+
+   ```js
+   props: ['initialCounter'],
+   data: function () {
+     return {
+       counter: this.initialCounter
+     }
+   }
+   ```
+
+2. **这个 prop 以一种原始的值传入且需要进行转换。**在这种情况下，最好使用这个 prop 的值来定义一个计算属性：
+
+   ```js
+   props: ['size'],
+   computed: {
+     normalizedSize: function () {
+       return this.size.trim().toLowerCase()
+     }
+   }
+   ```
+
+> 注意在 JavaScript 中对象和数组是通过引用传入的，所以对于一个数组或对象类型的 prop 来说，在子组件中改变这个对象或数组本身**将会**影响到父组件的状态。
+
+#### Prop验证
+
+```js
+Vue.component('my-component', {
+  props: {
+    // 基础的类型检查 (`null` 和 `undefined` 会通过任何类型验证)
+    propA: Number,
+    // 多个可能的类型
+    propB: [String, Number],
+    // 必填的字符串
+    propC: {
+      type: String,
+      required: true
+    },
+    // 带有默认值的数字
+    propD: {
+      type: Number,
+      default: 100
+    },
+    // 带有默认值的对象
+    propE: {
+      type: Object,
+      // 对象或数组默认值必须从一个工厂函数获取
+      default: function () {
+        return { message: 'hello' }
+      }
+    },
+    // 自定义验证函数
+    propF: {
+      validator: function (value) {
+        // 这个值必须匹配下列字符串中的一个
+        return ['success', 'warning', 'danger'].indexOf(value) !== -1
+      }
+    }
+  }
+})
+```
+
+> 注意那些 prop 会在一个组件实例创建**之前**进行验证，所以实例的属性 (如 `data`、`computed` 等) 在 `default` 或 `validator` 函数中是不可用的。
+
+##### 类型检查
+
+`type` 可以是下列原生构造函数中的一个：
+
+- `String`
+- `Number`
+- `Boolean`
+- `Array`
+- `Object`
+- `Date`
+- `Function`
+- `Symbol`
+
+额外的，`type` 还可以是一个自定义的构造函数，并且通过 `instanceof` 来进行检查确认。例如，给定下列现成的构造函数：
+
+```js
+function Person (firstName, lastName) {
+  this.firstName = firstName
+  this.lastName = lastName
+}
+```
+
+<div>
+    <iframe height="265" style="width: 100%;" scrolling="no" title="MWwMQZw" src="https://codepen.io/zjlyyq/embed/MWwMQZw?height=265&theme-id=light&default-tab=js,result" frameborder="no" allowtransparency="true" allowfullscreen="true">
+  See the Pen <a href='https://codepen.io/zjlyyq/pen/MWwMQZw'>MWwMQZw</a> by Zhang Jialu
+  (<a href='https://codepen.io/zjlyyq'>@zjlyyq</a>) on <a href='https://codepen.io'>CodePen</a>.
+</iframe>
+</div>
+
+上述例子验证 `person-info` prop 的值是否是通过 `new Person` 创建的。
+
+#### 非Prop的Attribute
+
+一个非 prop 的 attribute 是指传向一个组件，但是该组件并没有相应 prop 定义的 attribute。这些 attribute 会被添加到这个组件的根元素上。
+
+##### 替换/合并已有的 Attribute
+
+对于绝大多数 attribute 来说，从外部提供给组件的值会替换掉组件内部设置好的值。所以如果传入 `type="text"` 就会替换掉 `type="date"` 并把它破坏！庆幸的是，`class` 和 `style` attribute 会稍微智能一些，即两边的值会被合并起来，从而得到最终的值。
+
+例如：
+
+<div>
+   <iframe height="265" style="width: 100%;" scrolling="no" title="非Prop的Attribute" src="https://codepen.io/zjlyyq/embed/PoqrLqV?height=265&theme-id=light&default-tab=js,result" frameborder="no" allowtransparency="true" allowfullscreen="true">
+  See the Pen <a href='https://codepen.io/zjlyyq/pen/PoqrLqV'>非Prop的Attribute</a> by Zhang Jialu
+  (<a href='https://codepen.io/zjlyyq'>@zjlyyq</a>) on <a href='https://codepen.io'>CodePen</a>.
+</iframe>
+</div>
+
+传入组件`person-info`的class属性`intro`最终会和组件模板中的class属性`container`一起构成class属性。这点带给我们的启发就是在使用第三方UI库，例如Element时，自定义组件的样式可以直接在使用组件的时候添加class属性。
+
+##### 禁用 Attribute 继承
+
+组件的根元素更多的时候是作为容器，如果你**不**希望组件的根元素继承 attribute，你可以在组件的选项中设置 `inheritAttrs: false`。例如：
+
+```js
+Vue.component('my-component', {
+  inheritAttrs: false,
+  // ...
+})
+```
+
+这尤其适合配合实例的 `$attrs` 属性使用，该属性包含了传递给一个组件的 attribute 名和 attribute 值，例如：
+
+```js
+{
+  required: true,
+  placeholder: 'Enter your username'
+}
+```
+
+有了 `inheritAttrs: false` 和 `$attrs`，你就可以手动决定这些 attribute 会被赋予哪个元素。在撰写[基础组件](https://cn.vuejs.org/v2/style-guide/#基础组件名-强烈推荐)的时候是常会用到的：
+
+```html
+Vue.component('base-input', {
+  inheritAttrs: false,
+  props: ['label', 'value'],
+  template: `
+    <label>
+      {{ label }}
+      <input
+        v-bind="$attrs"
+        v-bind:value="value"
+        v-on:input="$emit('input', $event.target.value)"
+      >
+    </label>
+  `
+})
+```
+
+> 注意 `inheritAttrs: false` 选项**不会**影响 `style` 和 `class` 的绑定。
+
+这个模式允许你在使用基础组件的时候更像是使用原始的 HTML 元素，而不会担心哪个元素是真正的根元素：
+
+```html
+<base-input
+  v-model="username"
+  required
+  placeholder="Enter your username"
+></base-input>
+```
+
+一下面这个例子为例：
+
+<div>
+    <iframe height="265" style="width: 100%;" scrolling="no" title="OJVeGJM" src="https://codepen.io/zjlyyq/embed/OJVeGJM?height=265&theme-id=light&default-tab=js,result" frameborder="no" allowtransparency="true" allowfullscreen="true">
+  See the Pen <a href='https://codepen.io/zjlyyq/pen/OJVeGJM'>OJVeGJM</a> by Zhang Jialu
+  (<a href='https://codepen.io/zjlyyq'>@zjlyyq</a>) on <a href='https://codepen.io'>CodePen</a>.
+</iframe>
+</div>
+
+### 自定义事件
+
+#### 事件名
+
+不同于组件和 prop，事件名不存在任何自动化的大小写转换。而是触发的事件名需要完全匹配监听这个事件所用的名称。
+
+不同于组件和 prop，事件名不会被用作一个 JavaScript 变量名或属性名，所以就没有理由使用 camelCase 或 PascalCase 了。并且 `v-on` 事件监听器在 DOM 模板中会被自动转换为全小写 (因为 HTML 是大小写不敏感的)，所以 `v-on:myEvent` 将会变成 `v-on:myevent`——导致 `myEvent` 不可能被监听到。
+
+因此，我们推荐你**始终使用 kebab-case 的事件名**。
+
+#### 自定义组件的 v-model
+
+在组件基础章也演示过，一个组件上的 `v-model` 默认会利用名为 `value` 的 prop 和名为 `input` 的事件，但是像单选框、复选框等类型的输入控件可能会将 `value` attribute 用于[不同的目的](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/input/checkbox#Value)。`model` 选项可以用来避免这样的冲突：
+
+<div>
+    <iframe height="265" style="width: 100%;" scrolling="no" title="`model` 选项" src="https://codepen.io/zjlyyq/embed/ZEGdZvj?height=265&theme-id=light&default-tab=js,result" frameborder="no" allowtransparency="true" allowfullscreen="true">
+  See the Pen <a href='https://codepen.io/zjlyyq/pen/ZEGdZvj'>`model` 选项</a> by Zhang Jialu
+  (<a href='https://codepen.io/zjlyyq'>@zjlyyq</a>) on <a href='https://codepen.io'>CodePen</a>.
+</iframe>
+</div>
+
+#### 将原生事件绑定到组件
+
+你可能有很多次想要在一个组件的根元素上直接监听一个原生事件。这时，你可以使用 `v-on` 的 `.native` 修饰符：
+
+```html
+<base-input v-on:focus.native="onFocus"></base-input>
+```
+
+在有的时候这是很有用的，不过在你尝试监听一个类似 `input` 的非常特定的元素时，这并不是个好主意。比如上述 `base-input` 组件可能做了如下重构，所以根元素实际上是一个 `label` 元素：
+
+```html
+<label>
+  {{ label }}
+  <input
+    v-bind="$attrs"
+    v-bind:value="value"
+    v-on:input="$emit('input', $event.target.value)"
+  >
+</label>
+```
+
+这时，父级的 `.native` 监听器将静默失败。它不会产生任何报错，但是 `onFocus` 处理函数不会如你预期地被调用。
+
+这块太复杂了，以后用到再说吧。
+
+#### .sync 修饰符
+
+同上，暂时用不到
+
+### 插槽
+
+待定
+
+### 动态组件 & 异步组件
+
+#### 在动态组件上使用`keep-alive`
+
+#### 异步组件
+
+在大型应用中，我们可能需要将应用分割成小一些的代码块，并且只在需要的时候才从服务器加载一个模块。为了简化，Vue 允许你以一个工厂函数的方式定义你的组件，这个工厂函数会异步解析你的组件定义。Vue 只有在这个组件需要被渲染的时候才会触发该工厂函数，且会把结果缓存起来供未来重渲染。例如：
