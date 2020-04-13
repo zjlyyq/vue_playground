@@ -1,7 +1,34 @@
 const Vue = require('vue');
 // const todoItem = require('./components/todoItem');
-import todoItem from './components/todoItem';
+// import todoItem from './components/todoItem';
 // var todoItem = require('todo-item');
+
+// 局部注册，组件选项对象
+todoItem = {
+    template: `
+    <div>
+        {{message1 + ': '}}{{context}}
+        <p>截止时间:{{publishDate}}</p>
+
+    </div>
+    `,
+    data() {
+        return {
+            message1: '这是一个to-do item待办项'
+        }
+    },
+    props: {
+        'context': {
+            type: String,
+            default: ""
+        },
+        "publishDate": {
+            type: String,
+            default: new Date().toLocaleDateString()
+        }
+    }
+}
+
 // Vue.component( 'todo-item',{
 //     // el: "#todo",
 //     template: `
