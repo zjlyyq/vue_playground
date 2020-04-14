@@ -1200,7 +1200,14 @@ new Vue({
 })
 ```
 
-对于 `components` 对象中的每个属性来说，其属性名就是自定义元素的名字，其属性值就是这个组件的选项对象。
+对于 `components` 对象中的每个属性来说，其属性名就是自定义元素的名字，**其属性值就是这个组件的选项对象**。
+
+<div>
+    <iframe height="265" style="width: 100%;" scrolling="no" title="WNQvdBb" src="https://codepen.io/zjlyyq/embed/WNQvdBb?height=265&theme-id=dark&default-tab=js,result" frameborder="no" allowtransparency="true" allowfullscreen="true" loading="lazy">
+  See the Pen <a href='https://codepen.io/zjlyyq/pen/WNQvdBb'>WNQvdBb</a> by Zhang Jialu
+  (<a href='https://codepen.io/zjlyyq'>@zjlyyq</a>) on <a href='https://codepen.io'>CodePen</a>.
+</iframe>
+</div>
 
 注意**局部注册的组件在其子组件中\*不可用\***。例如，如果你希望 `ComponentA` 在 `ComponentB` 中可用，则你需要这样写：
 
