@@ -1,10 +1,12 @@
 const Vue = require('vue');
+import upperFirst from 'lodash/upperFirst';
+import camelCase from 'lodash/camelCase';
 // const todoItem = require('./components/todoItem');
 // import todoItem from './components/todoItem';
 // var todoItem = require('todo-item');
 
 // 局部注册，组件选项对象
-todoItem = {
+var todoItem = {
     template: `
     <div>
         {{message1 + ': '}}{{context}}
@@ -61,7 +63,7 @@ todoItem = {
 //         <div>
 //             {{message1 + ': '}}{{context}}
 //             <p>截止时间:{{publishDate}}</p>
-    
+
 //         </div>
 //         `,
 //         data() {
@@ -81,16 +83,43 @@ todoItem = {
 //         }
 //     })
 // })
+const requireComponent = require.context('./components', true, /Base[A-Z]\w+\.(vue|js)$/);
+console.log('requireComponent', requireComponent);
+console.log('requireComponent', requireComponent.keys());
+
+requireComponent.keys().forEach(fileName => {
+    console.log(fileName);
+    // 获取组件配置
+    const componentConfig = requireComponent(fileName)
+    console.log(componentConfig);
+    // 获取组件的 PascalCase 命名
+    const componentName = upperFirst(
+        camelCase(
+            // 获取和目录深度无关的文件名
+            fileName
+                .split('/')
+                .pop()
+                .replace(/\.\w+$/, '')
+        )
+    )
+    Vue.component(componentName,
+        // 如果这个组件选项是通过 `export default` 导出的，
+        // 那么就会优先使用 `.default`，
+        // 否则回退到使用模块的根。
+        componentConfig.default || componentConfig);
+    console.log(componentName);
+});
 const vm = new Vue({
     el: "#app",
     data: {
+        submit: '登录',
         message: "hello vue!",
         test: 'test',
         creatingTime: '页面加载于 ' + new Date().toLocaleString(),
         todoList: [
             {
-                id:1,
-                context:'读书',
+                id: 1,
+                context: '读书',
                 date: '2020/03/29'
             },
             {
@@ -107,8 +136,8 @@ const vm = new Vue({
         showInfo: false,
         showList: [
             {
-                id:1,
-                context:'读书',
+                id: 1,
+                context: '读书',
                 date: '2020/03/29',
                 showFlag: true
             },
@@ -126,12 +155,12 @@ const vm = new Vue({
             }
         ]
     },
-    components:{
+    components: {
         "todoItem": todoItem
     },
     computed: {
         // 计算属性的 getter
-        reversedMessage: function() {
+        reversedMessage: function () {
             console.log('reversedMessage called');
             // `this` 指向 vm 实例
             return this.message.split(' ').reverse().join('');
@@ -146,7 +175,7 @@ const vm = new Vue({
             console.log('changeMessage called');
             this.message += ' zjl';
         },
-        testFun(){
+        testFun() {
             this.test += ' test';
             console.log('test called');
         }
@@ -161,8 +190,8 @@ const app2 = new Vue({
 })
 
 console.log(vm.showList);
-setTimeout(()=>{
-    vm.todoList = vm.todoList.filter(function(item){
+setTimeout(() => {
+    vm.todoList = vm.todoList.filter(function (item) {
         return item.id > 1;
     })
-},3000)
+}, 3000)

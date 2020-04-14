@@ -1209,7 +1209,7 @@ new Vue({
 </iframe>
 </div>
 
-注意**局部注册的组件在其子组件中\*不可用\***。例如，如果你希望 `ComponentA` 在 `ComponentB` 中可用，则你需要这样写：
+注意**局部注册的组件在其子组件中*不可用***。例如，如果你希望 `ComponentA` 在 `ComponentB` 中可用，则你需要这样写：
 
 ```js
 ar ComponentA = { /* ... */ }
@@ -1338,6 +1338,8 @@ requireComponent.keys().forEach(fileName => {
 ```
 
 记住**全局注册的行为必须在根 Vue 实例 (通过 `new Vue`) 创建之前发生**。
+
+> 全局注册组件，组件是以单文件形式书写的，且不能只提供选项对象。
 
 ### prop
 
