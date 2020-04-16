@@ -1779,3 +1779,61 @@ inject:['count']
 
 #### 循环引用
 
+##### 递归组件
+
+组件是可以在它们自己的模板中调用自身的。不过它们只能通过 `name` 选项来做这件事：
+
+```js
+name: 'unique-name-of-my-component'
+```
+
+当你使用 `Vue.component` 全局注册一个组件时，这个全局的 ID 会自动设置为该组件的 `name` 选项。
+
+```js
+Vue.component('unique-name-of-my-component', {
+  // ...
+})
+```
+
+稍有不慎，递归组件就可能导致无限循环：
+
+```js
+name: 'stack-overflow',
+template: '<div><stack-overflow></stack-overflow></div>'
+```
+
+类似上述的组件将会导致“max stack size exceeded”错误，所以请确保递归调用是条件性的 (例如使用一个最终会得到 `false` 的 `v-if`)。
+
+<div>
+    <iframe height="265" style="width: 100%;" scrolling="no" title="循环引用" src="https://codepen.io/zjlyyq/embed/MWaKzQV?height=265&theme-id=dark&default-tab=js,result" frameborder="no" allowtransparency="true" allowfullscreen="true" loading="lazy">
+  See the Pen <a href='https://codepen.io/zjlyyq/pen/MWaKzQV'>循环引用</a> by Zhang Jialu
+  (<a href='https://codepen.io/zjlyyq'>@zjlyyq</a>) on <a href='https://codepen.io'>CodePen</a>.
+</iframe>
+</div>
+
+##### 组件之间的循环引用
+
+全局注册组件没有问题，如果使用一个*模块系统*依赖/导入组件，例如通过 webpack 或 Browserify，你会遇到一个错误：
+
+```
+Failed to mount component: template or render function not defined.
+```
+
+为了解决这个问题，我们需要给模块系统一个点，在那里“A *反正*是需要 B 的，但是我们不需要先解析 B。
+
+在我们的例子中，把 `` 组件设为了那个点。我们知道那个产生悖论的子组件是 `` 组件，所以我们会等到生命周期钩子 `beforeCreate` 时去注册它：
+
+```js
+beforeCreate: function () {
+  this.$options.components.TreeFolderContents = require('./tree-folder-contents.vue').default
+}
+```
+
+或者，在本地注册组件的时候，你可以使用 webpack 的异步 `import`：
+
+```js
+components: {
+  TreeFolderContents: () => import('./tree-folder-contents.vue')
+}
+```
+
