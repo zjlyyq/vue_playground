@@ -76,9 +76,22 @@ const vm = new Vue({
             console.log('reversedMessage called');
             // `this` 指向 vm 实例
             return this.message.split(' ').reverse().join('');
+        },
+        // 测试计算属性对于列表长度的反应
+        computeList() {
+            let o = JSON.parse(JSON.stringify(this.showList))
+            o.map(e => e.context = '我就喜欢：' + e.context);
+            return o
         }
     },
     methods: {
+        addItem() {
+            this.showList.push({
+                id: 4,
+                context: '打LOL',
+                date: '2021/03/21'
+            })
+        },
         reversedMessageFunc() {
             console.log('reversedMessageFunc called');
             return this.message.split(' ').reverse().join('');
