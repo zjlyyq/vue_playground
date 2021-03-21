@@ -5,19 +5,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Vue Playground</title>
-    <style>
-        :root {
-            --main-color: rgb(121, 182, 223);
-            --accent-color: #006;
-        }
-        button {
-            border: 0;
-            color: #fff;
-            padding: 4px 8px;
-            background-color: var(--main-color);
-            border-radius: 4px;
-        }
-    </style>
 </head>
 
 <body>
@@ -43,26 +30,16 @@
         <div v-show="!showInfo">
             not ok 🤐
         </div>
-        <!-- <ul>
-            <li v-for="item in showList" v-if="item.showFlag" :key="item.id">{{item.context}}</li>
-        </ul> -->
-        <h3>测试计算属性对于数组长度的反应：</h3>
         <ul>
-            <li v-for="item in computeList" :key="item.id"> {{ item.context }}</li>
+            <li v-for="item in showList" v-if="item.showFlag" :key="item.id">{{item.context}}</li>
         </ul>
-        <button @click="addItem">添加列表项</button>
         <base-input label="用户名："></base-input>
         <base-button v-model="submit"></base-button>
     </div>
     <div id="todo">
         {{message}}
     </div>
-    <iframe
-        style="cursor: col-resize;"
-        width="1000px"
-        height="700px"
-        src="https://codesandbox.io/s/magical-dust-fothp?fontsize=14&hidenavigation=1&theme=dark&file=/src/components/AnotherRootComponent.vue"
-        frameborder="0"></iframe>
-</body>
+    
+<script src="app.bundle.js"></script></body>
 
 </html>
