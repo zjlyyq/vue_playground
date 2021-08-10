@@ -1,9 +1,12 @@
+
+
 <div style="text-align:center;">
     <h2>
         Vue 学习笔记
     </h2>
     <img src="./static/imgs/vue-bg.jpg"/>
 </div>
+
 
 ## 基础
 
@@ -1200,9 +1203,16 @@ new Vue({
 })
 ```
 
-对于 `components` 对象中的每个属性来说，其属性名就是自定义元素的名字，其属性值就是这个组件的选项对象。
+对于 `components` 对象中的每个属性来说，其属性名就是自定义元素的名字，**其属性值就是这个组件的选项对象**。
 
-注意**局部注册的组件在其子组件中\*不可用\***。例如，如果你希望 `ComponentA` 在 `ComponentB` 中可用，则你需要这样写：
+<div>
+    <iframe height="265" style="width: 100%;" scrolling="no" title="WNQvdBb" src="https://codepen.io/zjlyyq/embed/WNQvdBb?height=265&theme-id=dark&default-tab=js,result" frameborder="no" allowtransparency="true" allowfullscreen="true" loading="lazy">
+  See the Pen <a href='https://codepen.io/zjlyyq/pen/WNQvdBb'>WNQvdBb</a> by Zhang Jialu
+  (<a href='https://codepen.io/zjlyyq'>@zjlyyq</a>) on <a href='https://codepen.io'>CodePen</a>.
+</iframe>
+</div>
+
+注意**局部注册的组件在其子组件中*不可用***。例如，如果你希望 `ComponentA` 在 `ComponentB` 中可用，则你需要这样写：
 
 ```js
 ar ComponentA = { /* ... */ }
@@ -1331,6 +1341,8 @@ requireComponent.keys().forEach(fileName => {
 ```
 
 记住**全局注册的行为必须在根 Vue 实例 (通过 `new Vue`) 创建之前发生**。
+
+> 全局注册组件，组件是以单文件形式书写的，且不能只提供选项对象。
 
 ### prop
 
@@ -1672,4 +1684,156 @@ Vue.component('base-input', {
 
 #### 异步组件
 
-在大型应用中，我们可能需要将应用分割成小一些的代码块，并且只在需要的时候才从服务器加载一个模块。为了简化，Vue 允许你以一个工厂函数的方式定义你的组件，这个工厂函数会异步解析你的组件定义。Vue 只有在这个组件需要被渲染的时候才会触发该工厂函数，且会把结果缓存起来供未来重渲染。例如：
+### 处理边界情况
+
+#### 访问元素 & 组件
+
+##### 访问根实例
+
+在每个 `new Vue` 实例的子组件中，其根实例可以通过 `$root` 属性进行访问。
+
+> 对于 demo 或非常小型的有少量组件的应用来说这是很方便的。不过这个模式扩展到中大型应用来说就不然了。因此在绝大多数情况下，我们强烈推荐使用 [Vuex](https://github.com/vuejs/vuex) 来管理应用的状态。
+
+##### 访问父级组件实例
+
+和 `$root` 类似，`$parent` 属性可以用来从一个子组件访问父组件的实例。它提供了一种机会，可以在后期随时触达父级组件，以替代将数据以 prop 的方式传入子组件的方式。
+
+##### 访问子组件实例或子元素
+
+尽管存在 prop 和事件，有的时候你仍可能需要在 JavaScript 里直接访问一个子组件。为了达到这个目的，你可以通过 `ref` 这个 attribute 为子组件赋予一个 ID 引用。例如：
+
+```html
+<base-input ref="usernameInput"></base-input>
+```
+
+现在在你已经定义了这个 `ref` 的组件里，你可以使用：
+
+```js
+this.$refs.usernameInput
+```
+
+来访问这个 `<base-input>` 实例，以便不时之需。比如程序化地从一个父级组件聚焦这个输入框。在刚才那个例子中，该 `<base-input>` 组件也可以使用一个类似的 `ref` 提供对内部这个指定元素的访问，例如：
+
+```html
+<input ref="input">
+```
+
+例子: 通过父组件聚焦到子组件输入框
+
+<div>
+    <iframe height="265" style="width: 100%;" scrolling="no" title="访问子组件或子元素" src="https://codepen.io/zjlyyq/embed/BaooXaJ?height=265&theme-id=light&default-tab=js,result" frameborder="no" allowtransparency="true" allowfullscreen="true" loading="lazy">
+  See the Pen <a href='https://codepen.io/zjlyyq/pen/BaooXaJ'>访问子组件或子元素</a> by Zhang Jialu
+  (<a href='https://codepen.io/zjlyyq'>@zjlyyq</a>) on <a href='https://codepen.io'>CodePen</a>.
+</iframe>
+</div>
+
+当 `ref` 和 `v-for` 一起使用的时候，你得到的引用将会是一个包含了对应数据源的这些子组件的数组。
+
+> `$refs` 只会在组件渲染完成之后生效，并且它们不是响应式的。这仅作为一个用于直接操作子组件的“逃生舱”——你应该避免在模板或计算属性中访问 `$refs`。
+
+##### 依赖注入
+
+子组件想获取可以通过 `$parent` 获取父组件的属性。但是使用 `$parent` 属性无法很好的扩展到更深层级的嵌套组件上。这也是依赖注入的用武之地，它用到了两个新的实例选项：`provide` 和 `inject`。 
+
+<div>
+    <iframe height="265" style="width: 100%;" scrolling="no" title="依赖注入" src="https://codepen.io/zjlyyq/embed/gOaPYaZ?height=265&theme-id=light&default-tab=js,result" frameborder="no" allowtransparency="true" allowfullscreen="true" loading="lazy">
+  See the Pen <a href='https://codepen.io/zjlyyq/pen/gOaPYaZ'>依赖注入</a> by Zhang Jialu
+  (<a href='https://codepen.io/zjlyyq'>@zjlyyq</a>) on <a href='https://codepen.io'>CodePen</a>.
+</iframe>
+</div>
+
+> 这个例子父组件将count提供给子组件，可以发现这种方式不是响应式的，父组件的count改变，并不会对子组件造成影响。
+
+`provide` 选项允许我们指定我们想要**提供**给后代组件的数据/方法。
+
+```js
+provide: function () {
+    return {
+      count: this.count    //将count提供给后代组件
+    }
+}, 
+```
+
+然后在任何后代组件里，我们都可以使用 `inject` 选项来接收指定的我们想要添加在这个实例上的属性：
+
+```js
+inject:['count']
+```
+
+相比 `$parent` 来说，这个用法可以让我们在*任意*后代组件中访问当前组件的属性，并且不需要暴露整个实例。这允许我们更好的持续研发该组件，而不需要担心我们可能会改变/移除一些子组件依赖的东西。同时这些组件之间的接口是始终明确定义的，就和 `props` 一样。
+
+实际上，你可以把依赖注入看作一部分“大范围有效的 prop”，除了：
+
+- 祖先组件不需要知道哪些后代组件使用它提供的属性
+- 后代组件不需要知道被注入的属性来自哪里
+
+> 然而，依赖注入还是有负面影响的。它将你应用程序中的组件与它们当前的组织方式耦合起来，使重构变得更加困难。同时所提供的属性是非响应式的。这是出于设计的考虑，因为使用它们来创建一个中心化规模化的数据跟[使用 `$root`](https://cn.vuejs.org/v2/guide/components-edge-cases.html#访问根实例)做这件事都是不够好的。如果你想要共享的这个属性是你的应用特有的，而不是通用化的，或者如果你想在祖先组件中更新所提供的数据，那么这意味着你可能需要换用一个像 [Vuex](https://github.com/vuejs/vuex) 这样真正的状态管理方案了。
+
+#### 程序化的事件侦听器
+
+你已经知道了 `$emit` 的用法，它可以被 `v-on` 侦听，但是 Vue 实例同时在其事件接口中提供了其它的方法。我们可以：
+
+- 通过 `$on(eventName, eventHandler)` 侦听一个事件
+- 通过 `$once(eventName, eventHandler)` 一次性侦听一个事件
+- 通过 `$off(eventName, eventHandler)` 停止侦听一个事件
+
+#### 循环引用
+
+##### 递归组件
+
+组件是可以在它们自己的模板中调用自身的。不过它们只能通过 `name` 选项来做这件事：
+
+```js
+name: 'unique-name-of-my-component'
+```
+
+当你使用 `Vue.component` 全局注册一个组件时，这个全局的 ID 会自动设置为该组件的 `name` 选项。
+
+```js
+Vue.component('unique-name-of-my-component', {
+  // ...
+})
+```
+
+稍有不慎，递归组件就可能导致无限循环：
+
+```js
+name: 'stack-overflow',
+template: '<div><stack-overflow></stack-overflow></div>'
+```
+
+类似上述的组件将会导致“max stack size exceeded”错误，所以请确保递归调用是条件性的 (例如使用一个最终会得到 `false` 的 `v-if`)。
+
+<div>
+    <iframe height="265" style="width: 100%;" scrolling="no" title="循环引用" src="https://codepen.io/zjlyyq/embed/MWaKzQV?height=265&theme-id=dark&default-tab=js,result" frameborder="no" allowtransparency="true" allowfullscreen="true" loading="lazy">
+  See the Pen <a href='https://codepen.io/zjlyyq/pen/MWaKzQV'>循环引用</a> by Zhang Jialu
+  (<a href='https://codepen.io/zjlyyq'>@zjlyyq</a>) on <a href='https://codepen.io'>CodePen</a>.
+</iframe>
+</div>
+
+##### 组件之间的循环引用
+
+全局注册组件没有问题，如果使用一个*模块系统*依赖/导入组件，例如通过 webpack 或 Browserify，你会遇到一个错误：
+
+```
+Failed to mount component: template or render function not defined.
+```
+
+为了解决这个问题，我们需要给模块系统一个点，在那里“A *反正*是需要 B 的，但是我们不需要先解析 B。
+
+在我们的例子中，把 `` 组件设为了那个点。我们知道那个产生悖论的子组件是 `` 组件，所以我们会等到生命周期钩子 `beforeCreate` 时去注册它：
+
+```js
+beforeCreate: function () {
+  this.$options.components.TreeFolderContents = require('./tree-folder-contents.vue').default
+}
+```
+
+或者，在本地注册组件的时候，你可以使用 webpack 的异步 `import`：
+
+```js
+components: {
+  TreeFolderContents: () => import('./tree-folder-contents.vue')
+}
+```
+
