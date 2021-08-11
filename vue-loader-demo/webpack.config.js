@@ -1,4 +1,7 @@
 const path = require('path');
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const { VueLoaderPlugin } = require('vue-loader');
+
 module.exports = {
     mode: "development",
 
@@ -32,7 +35,7 @@ module.exports = {
             filename: 'index.html',
             template: './index.html'
         }),
-        new CleanWebpackPlugin(),
+        // new CleanWebpackPlugin(),
         // 请确保引入这个插件！
         new VueLoaderPlugin()
     ],
@@ -41,6 +44,6 @@ module.exports = {
         alias: {
             'vue$': 'vue/dist/vue.js' // 用 webpack 1 时需用 'vue/dist/vue.common.js'
         },
-        // extensions: ['*', '.js', '.vue']
+        extensions: ['*', '.js', '.vue']
     }
 }
