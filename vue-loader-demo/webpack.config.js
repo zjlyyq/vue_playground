@@ -55,7 +55,7 @@ module.exports = {
 
     resolve: {
         alias: {
-            // 'vue$': 'vue/dist/vue.js' // 用 webpack 1 时需用 'vue/dist/vue.common.js'
+            'vue$': 'vue/dist/vue.js' // 用 webpack 1 时需用 'vue/dist/vue.common.js'
         },
         extensions: ['*', '.js', '.vue']
     }
