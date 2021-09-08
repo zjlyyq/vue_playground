@@ -15,14 +15,15 @@ Vue.component('input-awesome', {
             'input', {
                 domProps: {
                     type: 'password',
-                    placeholder: 'self.config.placeholder'
+                    placeholder: self.config.placeholder
                 }
             },
             self.$slots.default
         )
     },
     created() {
-        console.log('created', this); 
+        console.log('created', this, this.$props.config === this.config, this.config); 
+        console.log(`config.type = ${this.config.type}`)
     }
 })
 const config = {
@@ -34,7 +35,7 @@ new Vue({
     template: `
     <div>
         <div>Hello {{message}}</div>
-        <input-awesome :config="config"></input-awesome>
+        <input-awesome :type="config.type" :placeholder="config.placeholder" :config="config"></input-awesome>
     </div>
     `,
     el: "#app",
