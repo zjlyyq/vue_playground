@@ -14,6 +14,11 @@ module.exports = {
         filename: '[name].bundle.js'
     },
 
+    devServer: {
+        contentBase: './dist',
+        hot: true
+    },
+
     module: {
         rules: [
             // ... 其它规则
@@ -27,8 +32,16 @@ module.exports = {
                 test: /\.js$/,
                 loader: 'babel-loader'
             },
+            {
+                test: /\.css$/,
+                use: [
+                    'vue-style-loader',
+                    'css-loader'
+                ]
+            },
         ]
     },
+
     plugins: [
         new HtmlWebpackPlugin({
             title: 'Output Management',
@@ -42,7 +55,7 @@ module.exports = {
 
     resolve: {
         alias: {
-            'vue$': 'vue/dist/vue.js' // 用 webpack 1 时需用 'vue/dist/vue.common.js'
+            // 'vue$': 'vue/dist/vue.js' // 用 webpack 1 时需用 'vue/dist/vue.common.js'
         },
         extensions: ['*', '.js', '.vue']
     }

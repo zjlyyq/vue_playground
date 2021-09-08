@@ -1,7 +1,8 @@
 <template>
     <div>
-        <label></label>
+        <label>{{label}}</label>
         <input type="submit" v-model="value" />
+        <input type="text" id="pwd">
     </div>
 </template>
 
@@ -21,6 +22,8 @@
         }
     }
 </script>
+
+
 
 
 
