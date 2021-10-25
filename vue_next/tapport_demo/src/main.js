@@ -1,9 +1,13 @@
 import { createApp } from "vue";
+import router from './router';
+import { Button, Icon, Collapse,CollapseItem } from "@nutui/nutui";
+import "@nutui/nutui/dist/style.css";
 
 const app = createApp({
   template: `
     <h1>Root instance</h1>
     <parent-component />
+    <router-view />
   `
 })
 
@@ -22,5 +26,6 @@ app.component('child-component', {
     <div>Hello, {{ name }}</div>
   `
 })
-
+app.use(Button).use(Icon).use(Collapse).use(CollapseItem);
+app.use(router);
 app.mount("#app");
