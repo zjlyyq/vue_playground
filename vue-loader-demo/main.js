@@ -1,46 +1,22 @@
 import Vue from 'vue';
 
-// import App from './components/App.vue'
-
-Vue.component('input-awesome', {
-    props: {
-        config: {
-            type: Object,
-            default: {}
-        }
-    },
-    render: function(h) {
-        let self = this;
-        return h(
-            'input', {
-                domProps: {
-                    type: 'password',
-                    placeholder: self.config.placeholder
-                }
-            },
-            self.$slots.default
-        )
-    },
-    created() {
-        console.log('created', this, this.$props.config === this.config, this.config); 
-        console.log(`config.type = ${this.config.type}`)
-    }
-})
-const config = {
-    type: 'password',
-    placeholder: 'Enter Your Password!'
-}
+import App from './components/App.vue'
+import './components/customInputInit'
 
 new Vue({
-    template: `
-    <div>
-        <div>Hello {{message}}</div>
-        <input-awesome :type="config.type" :placeholder="config.placeholder" :config="config"></input-awesome>
-    </div>
-    `,
+    // template: `
+    // <div>
+    //     <div>Hello {{message}}</div>
+    //     <input-awesome :config="config"></input-awesome>
+    // </div>
+    // `,
     el: "#app",
     data: {
-        message: "World"
+        message: "World",
+        config: {
+            type: 'password',
+            placeholder: 'Enter Your Password!'
+        }
     },
-    // render: h => h(App)
+    render: h => h(App)
 })
