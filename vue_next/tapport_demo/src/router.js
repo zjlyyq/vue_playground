@@ -1,5 +1,5 @@
 import  { createRouter, createWebHashHistory } from 'vue-router';
-import ffmpeg from './views/ffmpeg';
+import ffmpeg from './views/ffmpeg2';
 
 const routes = [
     { path: '/', component: ffmpeg },
