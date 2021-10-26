@@ -36,9 +36,29 @@ app.component('child-component', {
 })
 
 app.component('video-preview', {
+  props: {
+    videos: Array
+  },  
   render() {
-    return <div><video /></div>
+    console.log('videos', this.videos);
+    const videos = [];
+    for(let video of this.videos) {
+        const url = URL.createObjectURL(video);
+        console.log(url);
+        videos.push(<video controls> 
+            <source src={url}
+            type="video/mp4"></source>
+            sorry, your browser doesn't support embedded videos.
+        </video>);
+    }
+    return <div>
+        { videos }
+    </div>
+  },
+  beforeUpdate() {
+      console.log(this.videos);
   }
+
 });
 
 {/* console.log(VideoPreview); */}

@@ -8,9 +8,10 @@ const app = express();
 app.use(formidable());
 
 // 处理好的文件名
-const downloadFile = '';
+let downloadFile = '';
 app.post('/handleVideo', (req, res) => {
     const { files } = req;
+    const paths = [];
     res.setHeader('Access-Control-Allow-Origin', '*');
     for(let filename in files) {
         console.log(filename, typeof files[filename]);
@@ -18,7 +19,8 @@ app.post('/handleVideo', (req, res) => {
         console.log(`mv ${file.path} ${path.resolve(__dirname, './tmp/' + file.name)}`);
         try {
             child_process.execSync(`mv ${file.path} ${path.resolve(__dirname, './tmp/' + file.name.replace(/ /g, '-'))}`);
-            res.send('finished');
+            // res.send('finished');
+            paths.push(path.resolve(__dirname, './tmp/' + file.name.replace(/ /g, '-')));
         } catch (error) {
             // console.log('error', error);
             res.status('505');
@@ -36,6 +38,20 @@ app.post('/handleVideo', (req, res) => {
         //         res.send('finished');
         //     }
         // });
+    }
+    let pathconcat = '';
+    for(let p of paths) {
+        pathconcat += p + '|';
+    }
+    downloadFile = Date.now() + ".mp4";
+    const ffmpeg_cmd = `ffmpeg -i "concat:${pathconcat}" ${downloadFile}`;
+    console.log(ffmpeg_cmd);
+    try {
+        child_process.execSync(ffmpeg_cmd);
+        res.send(downloadFile);
+    } catch (error) {
+        res.status('505');
+        res.json({ errorText: error.toString()});
     }
 })
 

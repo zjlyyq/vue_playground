@@ -2,23 +2,6 @@
 const cp = require('child_process');
 
 module.exports = {
-<<<<<<< HEAD
-    configureWebpack: {
-        resolve: {
-            alias: {
-                'vue$': 'vue/dist/vue.esm-bundler.js' // 用 webpack 1 时需用 'vue/dist/vue.common.js'
-            },
-            extensions: ['*', '.js', '.vue']
-        }
-    },
-    // chainWebpack: config => {
-    //     config.module.rule('pug')
-    //         .test(/\.pug$/)
-    //         .use('pug-html-loader')
-    //         .loader('pug-html-loader')
-    //         .end()
-    // }
-=======
   configureWebpack: {
     resolve: {
       alias: {
@@ -43,5 +26,4 @@ module.exports = {
       // });
     }
   }
->>>>>>> e0385183d018637214576977cec70e2ed4dd4ca6
 }
