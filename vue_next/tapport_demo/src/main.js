@@ -1,6 +1,14 @@
-import { createApp } from "vue";
+import {
+  createApp
+} from "vue";
 import router from './router';
-import { Button, Icon, Collapse,CollapseItem } from "@nutui/nutui";
+import {
+  Button,
+  Icon,
+  Collapse,
+  CollapseItem,
+  NoticeBar
+} from "@nutui/nutui";
 import "@nutui/nutui/dist/style.css";
 
 const app = createApp({
@@ -26,6 +34,15 @@ app.component('child-component', {
     <div>Hello, {{ name }}</div>
   `
 })
-app.use(Button).use(Icon).use(Collapse).use(CollapseItem);
+
+app.component('video-preview', {
+  render() {
+    return <div><video /></div>
+  }
+});
+
+{/* console.log(VideoPreview); */}
+const nutuiComponents = [Button, Icon, Collapse, CollapseItem, NoticeBar];
+nutuiComponents.forEach(i => app.use(i));
 app.use(router);
 app.mount("#app");
