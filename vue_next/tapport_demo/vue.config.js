@@ -21,9 +21,9 @@ module.exports = {
       //   console.log(query, params, fields);
       //   res.send('finished');
       // })
-      cp.exec('node ./server/index.js', err => {
-        console.log(err);
-      });
+      // cp.exec('node ./server/index.js', err => {
+      //   console.log(err);
+      // });
     }
   }
 }
