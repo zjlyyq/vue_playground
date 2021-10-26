@@ -1,17 +1,15 @@
 <template lang="pug">
-  <div>
-    <h2>多视频合并</h2>
-    <nut-button type="primary">主要按钮</nut-button>
-  </div>
+div
+  h2 多视频合并
+  nut-button 主要按钮
 </template>
 
 <script>
 export default {
   data() {
     return {
-      videos: []
-    }
+      videos: [],
+    };
   },
-
-}
+};
 </script>
