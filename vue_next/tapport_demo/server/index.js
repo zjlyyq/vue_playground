@@ -5,7 +5,10 @@ const express = require('express');
 const formidable = require('express-formidable')
 const app = express();
 
-app.use(formidable());
+app.use(formidable({
+    // 文件大小限制 1G
+    maxFileSize: 1000 * 1024 * 1024
+}));
 
 // 处理好的文件名
 let downloadFile = '';
@@ -43,8 +46,9 @@ app.post('/handleVideo', (req, res) => {
     for(let p of paths) {
         pathconcat += p + '|';
     }
+    // pathconcat = pathconcat.substring(0, pathconcat.length - 1);
     downloadFile = Date.now() + ".mp4";
-    const ffmpeg_cmd = `ffmpeg -i "concat:${pathconcat}" ${downloadFile}`;
+    const ffmpeg_cmd = `ffmpeg -i "concat:${pathconcat}" -c copy ./tmp/output/${downloadFile}`;
     console.log(ffmpeg_cmd);
     try {
         child_process.execSync(ffmpeg_cmd);
@@ -55,10 +59,14 @@ app.post('/handleVideo', (req, res) => {
     }
 })
 
-app.post('/download', (req, res) => {
+app.get('/download', (req, res) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
+    console.log('处理视频下载： ' + path.resolve(__dirname, './' + downloadFile));
+    res.setHeader('Content-Type', 'application/octet-stream');
+    // 设置文件名
+    res.setHeader('Content-Disposition', 'attachment;filename=' + downloadFile);
     if (downloadFile.length === 0) res.send('视频拼接失败！');
-    else res.sendFile(downloadFile);
+    else res.sendFile(path.resolve(__dirname, './' + downloadFile));
 })
 app.listen(3333, () => {
     console.log('listening in port 3333');

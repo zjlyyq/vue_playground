@@ -7,7 +7,8 @@ import {
   Icon,
   Collapse,
   CollapseItem,
-  NoticeBar
+  NoticeBar,
+  Progress
 } from "@nutui/nutui";
 import "@nutui/nutui/dist/style.css";
 
@@ -31,7 +32,7 @@ app.component('parent-component', {
 app.component('child-component', {
   props: ['name'],
   template: `
-    <div>Hello, {{ name }}</div>
+    <div style="margin-top: 20px;">Hello, {{ name }}</div>
   `
 })
 
@@ -45,7 +46,7 @@ app.component('video-preview', {
     for(let video of this.videos) {
         const url = URL.createObjectURL(video);
         console.log(url);
-        videos.push(<video controls> 
+        videos.push(<video controls style={"width: 30%;"}> 
             <source src={url}
             type="video/mp4"></source>
             sorry, your browser doesn't support embedded videos.
@@ -62,7 +63,7 @@ app.component('video-preview', {
 });
 
 {/* console.log(VideoPreview); */}
-const nutuiComponents = [Button, Icon, Collapse, CollapseItem, NoticeBar];
+const nutuiComponents = [Button, Icon, Collapse, CollapseItem, NoticeBar, Progress];
 nutuiComponents.forEach(i => app.use(i));
 app.use(router);
 app.mount("#app");

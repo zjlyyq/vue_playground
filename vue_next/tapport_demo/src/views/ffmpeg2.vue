@@ -1,6 +1,6 @@
 <template lang="pug">
 div
-    nut-noticebar(text="多视频拼接步骤：1. 按顺序添加视频上传视频 2. 输入导出文件名 3. 点击拼接按钮")
+    nut-noticebar(text="多视频拼接步骤：1. 按顺序添加视频上传视频 2. 输入导出文件名 3. 点击拼接按钮 4. 下载按钮可用后说明视频已经拼接完毕")
     //- h2 多视频合并
     div
         input(type="file" multiple @change="upload")
@@ -10,6 +10,7 @@ div
         nut-button(type="info" :disabled="videos.length === 0" @click="handle") 拼接
         nut-button(type="success" :disabled="!finished" @click="download") 下载
 
+    nut-progress.marginTop10(:percentage="progressNum" :showText="false" stroke-width="12")
 
 </template>
 
@@ -19,7 +20,8 @@ export default {
     return {
       videos: [],
       finished: false,
-      errorText: ''
+      errorText: '',
+      progressNum: 20
     };
   },
   methods: {
@@ -47,11 +49,14 @@ export default {
                   console.log(this.errorText);
               }
           }
+        //   xhr.upload.onprogress = (e) => {
+        //       console.log(e.loaded, e.total);
+        //   }
           xhr.send(form);
       },
 
       download() {
-
+          location.href = 'http://localhost:3333/download'
       }
   }
 };
