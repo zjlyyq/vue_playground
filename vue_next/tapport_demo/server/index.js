@@ -66,7 +66,7 @@ app.get('/download', (req, res) => {
     // 设置文件名
     res.setHeader('Content-Disposition', 'attachment;filename=' + downloadFile);
     if (downloadFile.length === 0) res.send('视频拼接失败！');
-    else res.sendFile(path.resolve(__dirname, './' + downloadFile));
+    else res.sendFile(path.resolve(__dirname, './tmp/output/' + downloadFile));
 })
 app.listen(3333, () => {
     console.log('listening in port 3333');
