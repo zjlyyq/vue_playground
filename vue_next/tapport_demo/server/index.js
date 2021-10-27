@@ -71,3 +71,13 @@ app.get('/download', (req, res) => {
 app.listen(3333, () => {
     console.log('listening in port 3333');
 })
+
+// console.log(path.resolve(__dirname, '../../vue_demo'));
+app.use(
+    "/demo",
+    (req, res, next) => {
+        res.header("Access-Control-Allow-Origin", "*"); //自定义中间件，设置跨域需要的响应头。
+        next();
+    },
+    express.static(path.resolve(__dirname, '../../../vue_demo'))
+);
