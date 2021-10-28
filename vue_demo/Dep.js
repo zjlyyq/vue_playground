@@ -1,0 +1,29 @@
+export default class Dep {
+  constructor() {
+    this.subs = [];
+  }
+
+  addSub(sub) {
+    if (!this.subs.includes(sub))
+      this.subs.push(sub);
+  }
+
+  removeSub(sub) {
+    remove(this.subs, sub);
+  }
+
+  depend() {
+    if (window.target) {
+      this.addSub(window.target);
+    }
+  }
+
+  notify() {
+    const subs = this.subs.slice();
+    for (let i = 0; i < subs.length; i++) {
+      subs[i].update();
+    }
+  }
+}
+
+function remove(arr, item) {}
