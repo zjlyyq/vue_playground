@@ -6,18 +6,18 @@ let data = {
   info: {
     name: 'zjl'
   },
-  list: [1, 2, 3, 4]
+  list: [{x: 10, y: 12}, 2, 3, 4]
 };
 // defineReactive(data, "count", 0);
 // console.log(data.count);
 new Observer(data);
-new Watcher(data, "count", (newVal, oldVal) => {
-  console.log(`new = ${newVal}, old = ${oldVal}`);
-});
-new Watcher(data, "info.name", (newVal, oldVal) => {
-  console.log(`new = ${newVal}, old = ${oldVal}`);
-});
-new Watcher(data, "info.list.1", (newVal, oldVal) => {
+// new Watcher(data, "count", (newVal, oldVal) => {
+//   console.log(`new = ${newVal}, old = ${oldVal}`);
+// });
+// new Watcher(data, "info.name", (newVal, oldVal) => {
+//   console.log(`new = ${newVal}, old = ${oldVal}`);
+// });
+new Watcher(data, "info.list", (newVal, oldVal) => {
   console.log(`new = ${newVal}, old = ${oldVal}`);
 });
 

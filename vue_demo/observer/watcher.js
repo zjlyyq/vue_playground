@@ -21,6 +21,7 @@ export default class Watcher {
   }
 
   update() {
+      debugger
     const oldValue = this.value;
     this.value = this.get();
     this.cb.call(this.vm, this.value, oldValue);

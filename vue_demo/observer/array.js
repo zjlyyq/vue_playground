@@ -7,7 +7,11 @@ mathodsToPatch.forEach(function (method) {
   const original = arrayProto[method];
   Object.defineProperty(arrayMeyhods, method, {
     value: function mutator(...args) {
-      return original.call(this, ...args);
+        const result = original.call(this, ...args);
+        debugger
+        const ob = this.__ob__;
+        ob.dep.notify();
+        return result;
     },
     configurable: true,
     enumerable: false,

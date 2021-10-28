@@ -12,13 +12,16 @@ const arrayKeys = Object.getOwnPropertyNames(arrayMeyhods);
 export default class Observer {
   constructor(value) {
     this.value = value;
+    this.dep = new Dep();
+    def(value, '__ob__', this);
     if (!Array.isArray(value)) {
       this.walk(value);  
     } else {
-      if (hasProto)
-        value.__proto__ = arrayMeyhods;
-      else 
-        copyAugment(value, arrayMeyhods, arrayKeys);
+        this.observeArray(value);
+        if (hasProto)
+            value.__proto__ = arrayMeyhods;
+        else 
+            copyAugment(value, arrayMeyhods, arrayKeys);
     }
   }
 
@@ -26,6 +29,12 @@ export default class Observer {
     const keys = Object.keys(obj);
     for(let key of keys) {
       defineReavtive(obj, key, obj[key]);
+    }
+  }
+
+  observeArray(items) {
+    for(let item of items) {
+        observe(item);
     }
   }
 }
@@ -58,9 +67,17 @@ function defineReavtive(data, key, val) {
  * 如果value已经存在一个Observer实例，则直接返回它
  */
 function observe(value, asRootData) {
-  
-}
-
+  if (!isObject(value)) {
+      return;
+  }
+  let ob;
+  if (value.hasOwnProperty('__ob__') && value.__ob__ instanceof Observer) {
+      ob = value.__ob__;
+  } else {
+      ob = new Observer(value);
+  }
+  return ob;
+} 
 function copyAugment(target, src, keys) {
   for (let key of keys) {
     def(target, key, src[key]);
