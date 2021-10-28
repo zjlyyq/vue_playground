@@ -1,11 +1,12 @@
 // import defineReactive from "./reactive.js";
-import Observer from "./Observer.js";
-import Watcher from "./watcher.js";
+import Observer from "./observer/Observer.js";
+import Watcher from "./observer/watcher.js";
 let data = {
   count: 0,
   info: {
     name: 'zjl'
-  }
+  },
+  list: [1, 2, 3, 4]
 };
 // defineReactive(data, "count", 0);
 // console.log(data.count);
@@ -14,6 +15,9 @@ new Watcher(data, "count", (newVal, oldVal) => {
   console.log(`new = ${newVal}, old = ${oldVal}`);
 });
 new Watcher(data, "info.name", (newVal, oldVal) => {
+  console.log(`new = ${newVal}, old = ${oldVal}`);
+});
+new Watcher(data, "info.list.1", (newVal, oldVal) => {
   console.log(`new = ${newVal}, old = ${oldVal}`);
 });
 
