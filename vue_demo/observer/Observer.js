@@ -1,6 +1,6 @@
 import Dep from "./Dep.js";
 import { arrayMeyhods } from './array.js';
-import { def } from '../utils/index.js'
+import { def, isObject } from '../utils/index.js'
 /** 
  * Observer类会附加到每一个被侦测的object上。 
  * 一旦被附加上，Observer会将object的所有属性转换为getter/setter的形式 
@@ -31,9 +31,7 @@ export default class Observer {
 }
 
 function defineReavtive(data, key, val) {
-  if (typeof val === 'object') {
-    new Observer(val);
-  }
+  let childOb = observe(val);
   let dep = new Dep();
   Object.defineProperty(data, key, {
     enumerable: true,
@@ -41,6 +39,9 @@ function defineReavtive(data, key, val) {
     get() {
       dep.depend();
       // 在这里收集数组依赖
+      if (childOb) {
+        childOb.dep.depend();
+      }
       return val;
     },
     set(newVal) {
@@ -49,6 +50,15 @@ function defineReavtive(data, key, val) {
       dep.notify();
     }
   });
+}
+
+/**
+ * 尝试为value创建一个Observer实例，
+ * 如果创建成功，直接返回新创建的Observer实例
+ * 如果value已经存在一个Observer实例，则直接返回它
+ */
+function observe(value, asRootData) {
+  
 }
 
 function copyAugment(target, src, keys) {
