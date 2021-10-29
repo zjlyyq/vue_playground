@@ -46,6 +46,7 @@ function defineReavtive(data, key, val) {
     enumerable: true,
     configurable: true,
     get() {
+      console.log('get', key, val, !! childOb);
       dep.depend();
       // 在这里收集数组依赖
       if (childOb) {

@@ -8,8 +8,18 @@ mathodsToPatch.forEach(function (method) {
   Object.defineProperty(arrayMeyhods, method, {
     value: function mutator(...args) {
         const result = original.call(this, ...args);
-        debugger
         const ob = this.__ob__;
+        let inserted;
+        console.log('args', args);
+        switch(method) {
+          case 'push':
+          case 'unshift':
+            inserted = args;
+            break;
+          case 'splice':
+            inserted = args.slice(2);
+        }
+        if (inserted) ob.observeArray(inserted);
         ob.dep.notify();
         return result;
     },
