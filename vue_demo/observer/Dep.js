@@ -1,11 +1,12 @@
+let uid = 0;
 export default class Dep {
   constructor() {
     this.subs = [];
+    this.id = uid ++;
   }
 
   addSub(sub) {
-    if (!this.subs.includes(sub))
-      this.subs.push(sub);
+    this.subs.push(sub);
   }
 
   removeSub(sub) {
@@ -14,7 +15,7 @@ export default class Dep {
 
   depend() {
     if (window.target) {
-      this.addSub(window.target);
+      window.target.addDep(this);
     }
   }
 
@@ -26,4 +27,10 @@ export default class Dep {
   }
 }
 
-function remove(arr, item) {}
+function remove(arr, item) {
+  for(let it of arr) {
+    if (it === item) {
+      
+    }
+  }
+}
