@@ -39,7 +39,7 @@ export default class Observer {
   }
 }
 
-function defineReavtive(data, key, val) {
+export function defineReavtive(data, key, val) {
   let childOb = observe(val);
   let dep = new Dep();
   Object.defineProperty(data, key, {
