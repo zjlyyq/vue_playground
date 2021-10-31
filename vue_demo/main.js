@@ -1,7 +1,7 @@
 // import defineReactive from "./reactive.js";
 import Observer from "./observer/Observer.js";
 import Watcher from "./observer/watcher.js";
-import { set } from './observer/index.js';
+import { set, del } from './observer/index.js';
 window._watch = Watcher;
 let data = {
   count: 0,
@@ -56,15 +56,17 @@ Vue.prototype.$watch = function(expOrFn, callback, options) {
 }
 
 Vue.prototype.$set = set;
-
+Vue.prototype.$delete = del;
 const vm = new Vue({data});
+window._vm = vm;
 vm.$watch('info', (newval) => {
-  console.log('$watched', newval);
+  console.log('$watched info', newval);
 }, { deep: true, immediate: true})
 vm.$set(vm.info, 'age', 25);
 vm.$watch('info.age', (newval) => {
-  console.log('$watched', newval);
+  console.log('$watched info.age', newval);
 }, { deep: true, immediate: true})
+// vm.$delete(vm.info, 'age');
 // export default class Main {
 //   constructor() {
 //     this.value = 0;

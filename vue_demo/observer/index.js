@@ -1,4 +1,4 @@
-import { isValidArrayIndex } from '../utils/index.js'
+import { isValidArrayIndex, hasOwn } from '../utils/index.js'
 import { defineReavtive } from './Observer.js';
 export function set(target, key, val) {
     if (Array.isArray(target) && isValidArrayIndex(key)) {
@@ -31,4 +31,32 @@ export function set(target, key, val) {
     defineReavtive(target, key, val);
     ob.dep.notify();
     return val;
+}
+
+export function del(target, key) {
+    debugger
+    if (Array.isArray(target) && isValidArrayIndex(key)) {
+        target.splice(key, 1);
+        return
+    }
+    const ob = target.__ob__;
+    // ob.vmCount  可以判断target 是不是根数据
+    if (target.__isVue || (ob && ob.vmCount)) {
+        process.env.NODE_ENV !== 'production' && warn(
+            'Avoid adding reactive properties to a Vue instance or its root $data ' +
+         'at runtime - declare it upfront in the data option.'
+        );
+        return val;
+    }
+    // 如果key不是target自身的属性，则终止程序继续执行
+    if (!hasOwn(target, key)) {
+        return;
+    }
+    delete target[key];
+    console.log(ob.dep);
+    // 如果ob不存在，则直接终止程序
+    if (!ob) {
+        return;
+    }
+    ob.dep.notify();
 }
