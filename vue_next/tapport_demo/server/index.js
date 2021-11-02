@@ -10,6 +10,23 @@ app.use(formidable({
     maxFileSize: 1000 * 1024 * 1024
 }));
 
+function moveFile(sourcePath, targetPath) {
+    console.log(`mv ${sourcePath} ${targetPath}`)
+    child_process.execSync(`mv ${sourcePath} ${targetPath}`);
+}
+
+/**
+ * ffmpeg -ss 00:00:00 -t 8 -i 2021-10-19-11-02-49.mp4 1.gif
+ * @param {String} videoPath 视频绝对路径
+ * @param {String} startTime 视频截取起始点
+ * @param {Number} duration gif持续时长
+ * @param {String} outputName gif文件名
+ */
+function makeGif(videoPath, startTime = '00:00:00', duration=5, outputName='1.gif') {
+    const ffmpeg_cmd = `ffmpeg -ss ${startTime} -t ${duration} -i ${videoPath} ${outputName}`;
+    console.log(`制作Gif命令： ${ffmpeg_cmd}`)
+    child_process.execSync(ffmpeg_cmd);
+}
 // 处理好的文件名
 let downloadFile = '';
 app.post('/handleVideo', (req, res) => {
@@ -59,6 +76,33 @@ app.post('/handleVideo', (req, res) => {
     }
 })
 
+app.post('/handleVideoToGif', (req, res) => {
+    const { files } = req;
+    const paths = [];   // 保存视频路径
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    for(let filename in files) {
+        const file = files[filename];
+        try {
+            moveFile(
+                file.path, 
+                path.resolve(__dirname, './tmp/gif_source/' + file.name.replace(/ /g, '-')), 
+            );
+            paths.push(path.resolve(__dirname, './tmp/gif_source/' + file.name.replace(/ /g, '-')));
+            try {
+                const gifName =  Date.now().toString() + '.gif';
+                makeGif(paths[0], '00:00:00', 5, path.resolve(__dirname, './tmp/output/gif/' + gifName));
+                res.send('tmp/output/gif/' + gifName);
+            } catch (error) {
+                res.status('505');
+                res.json({ errorText: error.toString()});
+            }
+        } catch (error) {
+            res.status('505');
+            res.json({ errorText: error.toString()});
+            break;
+        }
+    }
+})
 app.get('/download', (req, res) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     console.log('处理视频下载： ' + path.resolve(__dirname, './' + downloadFile));
@@ -67,6 +111,16 @@ app.get('/download', (req, res) => {
     res.setHeader('Content-Disposition', 'attachment;filename=' + downloadFile);
     if (downloadFile.length === 0) res.send('视频拼接失败！');
     else res.sendFile(path.resolve(__dirname, './tmp/output/' + downloadFile));
+})
+app.get('/downloadGif', (req, res) => {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    const { filepath } = req.query;
+    console.log('处理Gif下载： ' + path.resolve(__dirname, './' + filepath));
+    res.setHeader('Content-Type', 'application/octet-stream');
+    // 设置文件名
+    res.setHeader('Content-Disposition', 'attachment;filename=' + filepath.split('gif/')[1]);
+    if (filepath.length === 0) res.send('下载Gif失败');
+    else res.sendFile(path.resolve(__dirname, './' + filepath));
 })
 app.listen(3333, () => {
     console.log('listening in port 3333');
