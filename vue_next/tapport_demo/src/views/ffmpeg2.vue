@@ -24,13 +24,24 @@ div
     input(type="file", @change="upload2")
   .error(v-if="errorText2") {{ errorText2 }}
   video-preview(:videos="sourceVideo")
-  
+  nut-cell(title="请选择视频起始时间点" :desc="currenttime" @click="open")
+  nut-cell(title="请输入gif时长" )
+    template(v-slot:link)
+      input(v-model="gifDuration")
+  nut-picker(
+    v-model:visible="show"
+    :list-data="listData"
+    title="时间选择"
+    @confirm="confirm"
+    @close="close"
+  )
   div(style="padding: 20px 0")
     nut-button(type="info", :disabled="sourceVideo === ''", @click="handleGif") 制作GIF
     nut-button(type="success", :disabled="!finished2", @click="downloadGif") 下载
 </template>
 
 <script>
+import { ref } from 'vue';
 export default {
   data() {
     return {
@@ -95,6 +106,8 @@ export default {
     handleGif() {
       const form = new FormData();
       form.append("source", this.sourceVideo[0]);
+      form.append("startTime", this.currenttime);
+      form.append("duration", this.gifDuration);
       const xhr = new XMLHttpRequest();
       xhr.open("post", "http://localhost:3333/handleVideoToGif");
       xhr.onreadystatechange = () => {
@@ -115,6 +128,43 @@ export default {
       location.href = "http://localhost:3333/downloadGif?filepath=" + this.gifURL;
     }
   },
+  created() {
+    console.log(this.listData)
+  },
+  setup() {
+    const show = ref(false);
+    const numbers = [];
+    const currenttime = ref('00:00');
+    const gifDuration = ref(5);
+    for(let i = 0;i < 60;i ++) numbers.push(i);
+    return {
+      listData: [
+        {
+          values: numbers,
+          defaultIndex: 0
+        },
+        {
+          values: numbers,
+          defaultIndex: 0
+        }
+      ],
+      open: () => {
+        show.value = true;
+      },
+      confirm(val) {
+        val.forEach((element, index) => {
+          console.log(element, index)
+          if (element < 10) {
+            val[index] = '0' + element;
+          }
+        });
+        currenttime.value = val.join(':')
+      },
+      show,
+      currenttime,
+      gifDuration
+    }
+  }
 };
 </script>
 

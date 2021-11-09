@@ -8,7 +8,10 @@ import {
   Collapse,
   CollapseItem,
   NoticeBar,
-  Progress
+  Progress,
+  Picker,
+  Popup,
+  Cell
 } from "@nutui/nutui";
 import "@nutui/nutui/dist/style.css";
 
@@ -63,7 +66,7 @@ app.component('video-preview', {
 });
 
 {/* console.log(VideoPreview); */}
-const nutuiComponents = [Button, Icon, Collapse, CollapseItem, NoticeBar, Progress];
+const nutuiComponents = [Button, Icon, Collapse, CollapseItem, NoticeBar, Progress, Picker, Popup, Cell];
 nutuiComponents.forEach(i => app.use(i));
 app.use(router);
 app.mount("#app");

@@ -65,7 +65,7 @@ app.post('/handleVideo', (req, res) => {
     }
     // pathconcat = pathconcat.substring(0, pathconcat.length - 1);
     downloadFile = Date.now() + ".mp4";
-    const ffmpeg_cmd = `ffmpeg -i "concat:${pathconcat}" -c copy ./tmp/output/${downloadFile}`;
+    const ffmpeg_cmd = `ffmpeg -i "concat:${pathconcat}" -c copy ${path.resolve(__dirname, "./tmp/output")}/${downloadFile}`;
     console.log(ffmpeg_cmd);
     try {
         child_process.execSync(ffmpeg_cmd);
@@ -78,6 +78,8 @@ app.post('/handleVideo', (req, res) => {
 
 app.post('/handleVideoToGif', (req, res) => {
     const { files } = req;
+    const { startTime, duration} = req.fields;
+    console.log(req);
     const paths = [];   // 保存视频路径
     res.setHeader('Access-Control-Allow-Origin', '*');
     for(let filename in files) {
@@ -90,7 +92,7 @@ app.post('/handleVideoToGif', (req, res) => {
             paths.push(path.resolve(__dirname, './tmp/gif_source/' + file.name.replace(/ /g, '-')));
             try {
                 const gifName =  Date.now().toString() + '.gif';
-                makeGif(paths[0], '00:00:00', 5, path.resolve(__dirname, './tmp/output/gif/' + gifName));
+                makeGif(paths[0], '00:'+startTime, duration, path.resolve(__dirname, './tmp/output/gif/' + gifName));
                 res.send('tmp/output/gif/' + gifName);
             } catch (error) {
                 res.status('505');
