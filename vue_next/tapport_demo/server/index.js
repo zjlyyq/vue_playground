@@ -27,6 +27,18 @@ function makeGif(videoPath, startTime = '00:00:00', duration=5, outputName='1.gi
     console.log(`制作Gif命令： ${ffmpeg_cmd}`)
     child_process.execSync(ffmpeg_cmd);
 }
+
+/**
+ * ffmpeg -i inout.mp4 -i input.audio  output.mp4
+ * @param {String} videoPath 视频绝对路径
+ * @param {String} audioPath 音频绝对路径
+ * @param {String} outputName 目标文件名
+ */
+ function mergeAudioToVideo(videoPath, audioPath, outputName='1.MP4') {
+    const ffmpeg_cmd = `ffmpeg -i ${videoPath} -i ${audioPath} ${outputName}`;
+    console.log(`音视频合并命令： ${ffmpeg_cmd}`)
+    child_process.execSync(ffmpeg_cmd);
+}
 // 处理好的文件名
 let downloadFile = '';
 app.post('/handleVideo', (req, res) => {
@@ -105,6 +117,35 @@ app.post('/handleVideoToGif', (req, res) => {
         }
     }
 })
+app.post('/handleMerge', (req, res) => {
+    const { files } = req;
+    console.log(files);
+    let { outputName } = req.fields;
+    outputName = outputName || Date.now() + '.mp4';
+    const paths = [];   // 保存视频路径
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    for(let filename in files) {
+        const file = files[filename];
+        try {
+            moveFile(
+                file.path, 
+                path.resolve(__dirname, './tmp/merge_source/' + file.name.replace(/ /g, '-')), 
+            );
+            paths.push(path.resolve(__dirname, './tmp/merge_source/' + file.name.replace(/ /g, '-')));
+        } catch (error) {
+            res.status('505');
+            res.json({ errorText: error.toString()});
+            break;
+        }
+    }
+    try {
+        mergeAudioToVideo(paths[0], paths[1], path.resolve(__dirname, './tmp/output/mergedVideo/' + outputName));
+        res.send('tmp/output/mergedVideo/' + outputName);
+    } catch (error) {
+        res.status('505');
+        res.json({ errorText: error.toString()});
+    }
+})
 app.get('/download', (req, res) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
     console.log('处理视频下载： ' + path.resolve(__dirname, './' + downloadFile));
@@ -120,7 +161,7 @@ app.get('/downloadGif', (req, res) => {
     console.log('处理Gif下载： ' + path.resolve(__dirname, './' + filepath));
     res.setHeader('Content-Type', 'application/octet-stream');
     // 设置文件名
-    res.setHeader('Content-Disposition', 'attachment;filename=' + filepath.split('gif/')[1]);
+    res.setHeader('Content-Disposition', 'attachment;filename=' + filepath.split('/')[3]);
     if (filepath.length === 0) res.send('下载Gif失败');
     else res.sendFile(path.resolve(__dirname, './' + filepath));
 })
