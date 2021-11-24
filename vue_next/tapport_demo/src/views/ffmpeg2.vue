@@ -38,6 +38,19 @@ div
   div(style="padding: 20px 0")
     nut-button(type="info", :disabled="sourceVideo === ''", @click="handleGif") 制作GIF
     nut-button(type="success", :disabled="!finished2", @click="downloadGif") 下载
+
+  //- 视频 字幕 音频合并
+  nut-noticebar(text="视频 字幕 音频合并")
+  div
+    label 选择视频文件：
+    input(type="file", @change="upload3")
+    label 选择音频文件：
+    input(type="file", @change="uploadAudio")
+  .error(v-if="errorText3") {{ errorText3 }}
+  video-preview(:videos="videos2")
+  div(style="padding: 20px 0")
+    nut-button(type="info", :disabled="videos2.length === 0", @click="handleMerge") 拼接
+    nut-button(type="success", :disabled="!finished3", @click="downloadComplate") 下载
 </template>
 
 <script>
@@ -52,12 +65,17 @@ export default {
         duration: 5
       },
       videos: [],
+      videos2: [],
+      audios: '',
       gifURL: '',
       finished: false,
       finished2: false,
+      finished23: false,
       errorText: "",
       errorText2: "",
-      progressNum: 20
+      progressNum: 20,
+      errorText3: "",
+      videoComplateUrl: ''
     };
   },
   methods: {
@@ -77,6 +95,18 @@ export default {
       }
     },
 
+    upload3(e) {
+      const files = e.target.files;
+      this.videos2 = [];
+      for (let file of files) {
+        this.videos2.push(file);
+      }
+    },
+    uploadAudio(e) {
+      const files = e.target.files;
+      this.audios = files[0];
+      console.log(this.audios)
+    },
     handle() {
       const form = new FormData();
       for (let i = 1; i <= this.videos.length; i++) {
@@ -91,7 +121,6 @@ export default {
          
         } else {
           this.errorText = JSON.parse(xhr.responseText).errorText.split("\n")[0];
-          console.log(this.errorText);
         }
       };
       //   xhr.upload.onprogress = (e) => {
@@ -120,6 +149,26 @@ export default {
 
     downloadGif() {
       location.href = "http://localhost:3333/downloadGif?filepath=" + this.gifURL;
+    },
+    handleMerge() {
+      const form = new FormData();
+      form.append("sourceVideo", this.videos2[0]);
+      form.append("sourceAudio", this.audios);
+      const xhr = new XMLHttpRequest();
+      xhr.open("post", "http://localhost:3333/handleMerge");
+      xhr.onreadystatechange = () => {
+        if (xhr.status === 200) {
+          this.errorText3 = "";
+          this.finished3 = true;
+          this.videoComplateUrl = xhr.responseText;
+        } else {
+          this.errorText3 = JSON.parse(xhr.responseText).errorText.split("\n")[0];
+        }
+      };
+      xhr.send(form);
+    },
+    downloadComplate() {
+      location.href = "http://localhost:3333/downloadGif?filepath=" + this.videoComplateUrl;
     }
   },
   created() {
@@ -147,7 +196,6 @@ export default {
       },
       confirm(val) {
         val.forEach((element, index) => {
-          console.log(element, index)
           if (element < 10) {
             val[index] = '0' + element;
           }
