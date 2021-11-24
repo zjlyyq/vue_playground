@@ -2,6 +2,10 @@
 const cp = require('child_process');
 
 module.exports = {
+  pwa: {
+    themeColor: "#fff",
+    msTileColor: '#000000'
+  },
   configureWebpack: {
     resolve: {
       alias: {
@@ -11,7 +15,7 @@ module.exports = {
     }
   },
   devServer: {
-    host: 'localhost',
+    host: '10.13.32.116',
     port: 9999,
     before: function (app, server, compiler) {
       // app.use(formidable());

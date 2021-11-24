@@ -14,6 +14,7 @@ import {
   Cell
 } from "@nutui/nutui";
 import "@nutui/nutui/dist/style.css";
+import './registerServiceWorker'
 
 const app = createApp({
   template: `
