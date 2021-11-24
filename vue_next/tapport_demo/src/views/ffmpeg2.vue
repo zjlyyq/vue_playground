@@ -42,6 +42,7 @@ div
 
 <script>
 import { ref } from 'vue';
+import { post } from '../../utils/http';
 export default {
   data() {
     return {
@@ -56,7 +57,7 @@ export default {
       finished2: false,
       errorText: "",
       errorText2: "",
-      progressNum: 20,
+      progressNum: 20
     };
   },
   methods: {
@@ -108,20 +109,13 @@ export default {
       form.append("source", this.sourceVideo[0]);
       form.append("startTime", this.currenttime);
       form.append("duration", this.gifDuration);
-      const xhr = new XMLHttpRequest();
-      xhr.open("post", "http://localhost:3333/handleVideoToGif");
-      xhr.onreadystatechange = () => {
-        if (xhr.status === 200) {
-          this.errorText2 = "";
-          this.finished2 = true;
-          this.gifURL = xhr.responseText;
-          console.log(this.gifURL);
-        } else {
-          this.errorText2 = JSON.parse(xhr.responseText).errorText.split("\n")[0];
-          console.log(this.errorText2);
-        }
-      };
-      xhr.send(form);
+      post("http://localhost:3333/handleVideoToGif", form).then(downUrl => {
+        this.errorText2 = "";
+        this.finished2 = true;
+        this.gifURL = downUrl;
+      }).catch(error => {
+        this.errorText2 = error;
+      })
     },
 
     downloadGif() {
