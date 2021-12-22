@@ -24,8 +24,20 @@ function htmlParser(template) {
         html = html.substring(attr[0].length)
         match.attrs.push(attr);
     }
-    console.log(end);
-
+    console.log(html);
+    console.log(parseStartTagEnd(html));
 }
 
+// 解析开始标签结尾
+function parseStartTagEnd(html) {
+    const startTagClose = /^\s*(\/?)>/;
+    const end = html.match(startTagClose);
+    const match = {};
+
+    if (end) {
+        match.unarySlash = end[1];
+        html = html.substring(end[0].length);
+    }
+    return match;
+}
 htmlParser(html);
