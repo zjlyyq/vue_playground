@@ -1,4 +1,4 @@
-const html = `<div><p class="greeting">Hello World!</p></div>`
+const html = `<p class="greeting" id="xxx">Hello World!</p>`
 
 function htmlParser(template) {
 
@@ -12,8 +12,32 @@ function htmlParser(template) {
         tagname: start[1],
         attrs: []
     }
+    // /^\s*([^\s"'<>\/=]+)   (?:\s* (=) \s* (?:"([^"]*)"+|'([^']*) '+| ([^\s"'=<>`]+)) )?/
+    // 解析标签属性
+    const attribute = /^\s*([^\s"'<>\/=]+)(?:\s*(=)\s*(?:"([^"]*)"+|'([^']*)'+|([^\s"'=<>`]+)))?/;
+    // let html = ' disabled= "true"" id="app"></div>';
+    let html = template.substring(start[0].length);
 
-    const attribute = /^\s*/
+    let end, attr;
+    const startTagClose = /^\s*(\/?)>/;
+    while(!(end=html.match(startTagClose)) && (attr = html.match(attribute))) {
+        html = html.substring(attr[0].length)
+        match.attrs.push(attr);
+    }
+    console.log(html);
+    console.log(parseStartTagEnd(html));
 }
 
+// 解析开始标签结尾
+function parseStartTagEnd(html) {
+    const startTagClose = /^\s*(\/?)>/;
+    const end = html.match(startTagClose);
+    const match = {};
+
+    if (end) {
+        match.unarySlash = end[1];
+        html = html.substring(end[0].length);
+    }
+    return match;
+}
 htmlParser(html);
