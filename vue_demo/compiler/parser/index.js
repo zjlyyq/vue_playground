@@ -40,4 +40,34 @@ function parseStartTagEnd(html) {
     }
     return match;
 }
-htmlParser(html);
+
+// htmlParser(html);
+
+async function asyncFn() {
+    const rand = Math.random();
+    if (rand > 0.9) return true;
+    else {
+        throw new Error('rand < 0.5');
+    }
+}
+function asyncFn2() {
+    return new Promise((resolve, reject) => {
+        const rand = Math.random();
+        if (rand > 0.5) resolve({});
+        else {
+            reject('rand < 0.5')
+        }
+    });
+}
+asyncFn().then(() => {
+    console.log(true);
+}).catch(error => {
+    console.log(error);
+})
+// (async () => {
+//     try {
+//         await asyncFn2();
+//     } catch (error) {
+//         console.log(error);
+//     }
+// })();
