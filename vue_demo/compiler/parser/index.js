@@ -1,9 +1,9 @@
-const html = `<p class="greeting" id="xxx">Hello World!</p>`
+let html = `<p class="greeting" id="xxx">Hello <span>World</span>!</p>`
+const ncname = '[a-zA-Z_][\\w\-\\.]*';  // \w 任意字母数字下划线
+const qnameCapture = `((?:${ncname}\\:)?${ncname})`;
 
-function htmlParser(template) {
+function parseStartTag(template) {
 
-    const ncname = '[a-zA-Z_][\\w\-\\.]*';  // \w 任意字母数字下划线
-    const qnameCapture = `((?:${ncname}\\:)?${ncname})`;
     const startTagOpen = new RegExp(`^<${qnameCapture}`);
     
     const start = template.match(startTagOpen);
@@ -24,8 +24,8 @@ function htmlParser(template) {
         html = html.substring(attr[0].length)
         match.attrs.push(attr);
     }
-    console.log(html);
     console.log(parseStartTagEnd(html));
+    return html.substring(end[0].length);
 }
 
 // 解析开始标签结尾
@@ -41,8 +41,38 @@ function parseStartTagEnd(html) {
     return match;
 }
 
-// htmlParser(html);
+html = parseStartTag(html);
 
+// 解析结束标签
+function parseEndTag(html) {
+    const endTag = new RegExp(`^<\\/${qnameCapture}[^>]*>`);
+    const match = html.match(endTag);
+    return  match;
+}
+
+// 解析注释
+function parseComment(html, options) {
+    const comment = /^<!--/;
+    if (comment.test(html)) {
+        const commentEnd = html.indexOf('-->');
+        if (commentEnd > 0) {
+            // 注释的钩子函数可以通过选项来配置， 只有options.shouldKeepComment 为真时，才会触发钩子函数，否则只截取 模板，不触发钩子函数
+            if (options.shouldKeepComment) {
+                options.comment(html.substring(4, commentEnd));
+            }   
+            html = html.substring(commentEnd + 3);
+        }
+    }
+    // 条件注释 <![if IE 6]>
+    const conditionalComment = /^<!\[/;
+    if (conditionalComment.test(html)) {
+        const conditionalEnd = html.indexOf(']>');
+        html = html.substring(conditionalEnd + 2)
+    }
+
+}
+
+parseEndTag('</div>')
 async function asyncFn() {
     const rand = Math.random();
     if (rand > 0.9) return true;
@@ -59,11 +89,11 @@ function asyncFn2() {
         }
     });
 }
-asyncFn().then(() => {
-    console.log(true);
-}).catch(error => {
-    console.log(error);
-})
+// asyncFn().then(() => {
+//     console.log(true);
+// }).catch(error => {
+//     console.log(error);
+// })
 // (async () => {
 //     try {
 //         await asyncFn2();
