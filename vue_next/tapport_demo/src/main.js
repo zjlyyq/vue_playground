@@ -2,6 +2,7 @@ import {
   createApp
 } from "vue";
 import router from './router';
+import VConsole from "vconsole";
 import {
   Button,
   Icon,
@@ -23,7 +24,10 @@ const app = createApp({
     <router-view />
   `
 })
-
+new VConsole();
+setInterval(() => {
+  console.log(document.body.querySelector('#app').clientHeight)
+}, 1500);
 app.component('parent-component', {
   template: `
     <h2>This is a parent component</h2>

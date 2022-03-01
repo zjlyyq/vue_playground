@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>input In IE</title>
+
+  <style>
+    .app {
+      width: 120px;
+      text-overflow: ellipsis;
+      overflow: hidden;
+    }
+  </style>
+</head>
+<body>
+  <input type="text" oninput="log()" onchange="change()" onfocus="focus()" placeholder="plaeae"/>
+  <div class="app">
+    XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX
+  </div>
+  <script>
+    function log() {
+       console.log('input');
+    }
+    function change() {
+       console.log('change');
+    }
+    function focus() {
+       console.log('onfocus');
+    }
+  </script>
+</body>
+</html>
