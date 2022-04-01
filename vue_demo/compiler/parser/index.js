@@ -67,7 +67,6 @@ function parseComment(html, options) {
         const conditionalEnd = html.indexOf(']>');
         html = html.substring(conditionalEnd + 2)
     }
-
 }
 
 // 解析文本
@@ -79,7 +78,7 @@ function parseText(html) {
             rest = html.slice(textEnd);
             // 不符合任何被解析的类型
             while( 
-                !endTag.test(html) &&
+                !endTag.test(html) && 
                 !startTagOpen.test(html) && 
                 !comment.test(html) && 
                 !conditionalComment.test(html)
@@ -102,7 +101,7 @@ function parseText(html) {
     }
 }
 // parseEndTag('</div>')
-parseText('hello </div>');
+parseText('hello<< </div>');
 async function asyncFn() {
     const rand = Math.random();
     if (rand > 0.9) return true;
