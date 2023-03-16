@@ -102,7 +102,7 @@ function parseText(html) {
     }
 }
 // parseEndTag('</div>')
-parseText('hello </div>');
+parseText('hello<< </div>');
 async function asyncFn() {
     const rand = Math.random();
     if (rand > 0.9) return true;

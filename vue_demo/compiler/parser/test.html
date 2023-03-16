@@ -1,11 +1,60 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>测试模板解析</title>
+    <style>
+        html {
+            /* rem作用于根元素字体大小时，相对于其出初始字体大小  16px*/
+            font-size: 1.5rem; 
+        } 
+        .p1 {
+            font-size: 16px;
+            line-height: 32px;
+        }
+
+        .s1 {
+            font-size: 2em;
+        }
+
+        .s2 {
+            font-size: 2em;
+            line-height: 2em;
+        }
+
+        .p2 {
+            font-size: 16px;
+            line-height: 2;
+        }
+
+        .s5 {
+            font-size: 2em;
+        }
+
+        .s6 {
+            font-size: 2em;
+            line-height: 2em;
+        }
+
+        .t1 {
+            font-size: 2rem;
+            line-height: 2rem;
+        }
+        .v1 {
+            width: 50vw;
+            height: 2rem;
+            border: 1px solid #000;
+        }
+
+        body {
+            font-size: 16px;
+        }
+    </style>
 </head>
+
 <body>
     <h3>测试模板解析: 1. 属性可以用哪些字符开头</h3>
     <h4>1. 属性可以用哪些字符开头</h4>
@@ -15,5 +64,25 @@
         const app = document.querySelector('#app');
         console.log(app.getAttribute('id'));
     </script>
+
+    <h3> 测试 em</h3>
+    <div class=" p1">
+        <div class="s1">1</div>
+        <div class="s2">1</div>
+    </div>
+    <div class="p2">
+        <div class="s5">1</div>
+        <div class="s6">1</div>
+    </div>
+    <h3> 测试 rem</h3>
+    <div class="r1">
+        <div class="t1">1</div>
+    </div>
+    <h3>测试 VH VW</h3>
+    <div class="v">
+        <div class="v1">1</div>
+    </div>
+    <p>html根元素上设置了rem会影响到所有子元素</p>
 </body>
+
 </html>
