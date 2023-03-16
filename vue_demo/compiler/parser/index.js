@@ -67,7 +67,6 @@ function parseComment(html, options) {
         const conditionalEnd = html.indexOf(']>');
         html = html.substring(conditionalEnd + 2)
     }
-
 }
 
 // 解析文本
@@ -79,7 +78,7 @@ function parseText(html) {
             rest = html.slice(textEnd);
             // 不符合任何被解析的类型
             while( 
-                !endTag.test(html) &&
+                !endTag.test(html) && 
                 !startTagOpen.test(html) && 
                 !comment.test(html) && 
                 !conditionalComment.test(html)

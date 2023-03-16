@@ -51,6 +51,8 @@ div
   div(style="padding: 20px 0")
     nut-button(type="info", :disabled="videos2.length === 0", @click="handleMerge") 拼接
     nut-button(type="success", :disabled="!finished3", @click="downloadComplate") 下载
+
+  .nav
 </template>
 
 <script>
@@ -217,5 +219,14 @@ export default {
 .error {
   color: red;
   margin: 10px 0 0 0;
+}
+
+.nav {
+  height: 40px;
+  background: #2f230d;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
 }
 </style>
