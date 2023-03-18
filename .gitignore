@@ -137,3 +137,5 @@ thumb
 sketch
 
 # End of https://www.gitignore.io/api/git,vue,node
+vue_source/class_playground.js
+.gitignore
