@@ -1,4 +1,4 @@
-const Dep = require('./Dep');
+import Dep from './Dep.js';
 /**
  * defineReactive 用来对Object.defineProperty 进行封装
  * @param {Object} data 
@@ -18,8 +18,10 @@ function defineReactive(data, key, val) {
       if (val === newVal) {
         return;
       }
-      dep.notify();
       val = newVal;
+      dep.notify();
     }
   })
 }
+
+export default defineReactive;

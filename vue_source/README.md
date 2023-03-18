@@ -4,3 +4,7 @@
 1. 如何追踪变化 —— 使用Object.defineProperty
 2. 如何收集依赖 —— 在getter中收集依赖，在setter中触发依赖
 3. 依赖收集在哪里 —— 依赖收集到Dep中
+4. 依赖是谁？—— Watcher 用于集中处理所有用到数据的场景（如下），Dep通知也只需要通知Watcher
+   1. 模板
+   2. 用户写的watch
+   3. ......
