@@ -1,4 +1,19 @@
 import Dep from "./Dep.js";
+import { arrayMethods } from './array.js';
+import { def } from './utils/index';
+
+function protoAugment(target, src, keys) {
+  target.__proto__ = src;
+}
+
+function copyAugment (target, src, keys) {
+  for(let key of keys) {
+    def(target, key, src[key])
+  }
+}
+// __proto__ 是否可用
+const hasProto = '__proto__' in {};
+const arrayKeys = Object.getOwnPropertyNames(arrayMethods);
 /**
  * Observer类会附加到每一个被侦测的object上。
  * 一旦被附加上，Observer会将object的所有属性转换为getter/setter的形式
@@ -8,7 +23,12 @@ class Observer {
   constructor(value) {
     this.value = value;
     if (!Array.isArray(value)) {
-      this.walk(value)
+      this.walk(value);
+    } else {
+      // this.walk(value)
+      const augment = hasProto ? protoAugment : copyAugment;
+      augment(value, arrayMethods, arrayKeys);
+      value.__proto__ = arrayMethods;
     }
   }
 
