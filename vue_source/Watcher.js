@@ -1,6 +1,7 @@
-
+let count = 0;
 export default class Watcher {
   constructor(vm, expOrFn, cb) {
+    this.id = count ++;
     this.vm = vm;
     // 执行this.getter()，就可以读取data.a.b.c的内容
     this.getter = parsePath(expOrFn);

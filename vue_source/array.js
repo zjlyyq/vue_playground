@@ -10,11 +10,20 @@ const arrayMethods = Object.create(arrayProto);
   'sort', 
   'reverse'
 ].forEach(method => {
+  // 缓存原始方法
+  const original = arrayProto[method]
   Object.defineProperty(arrayMethods, method, {
     enumerable: true,
     configurable: false,
     value: function mutator(...args) {
-      return arrayProto[method].call(this, ...args);
+      const ob = this.__ob__ // 新增
+      const result = original.apply(this, args)
+      if (method === 'push' || method === 'unshift') {
+        ob.observeArray(args);
+      }
+      // console.log(result)
+      ob.dep.notify();  // 向依赖发送消息
+      return result;
     }
   })
 })

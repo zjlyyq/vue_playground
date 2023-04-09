@@ -1,9 +1,9 @@
 export * from './lang.js';
 
-export {
-  isObject
-}
-from '../shared/util.js'
+// export {
+//   isObject
+// }
+// from '../shared/util.js'
 
 /**
  * Check if val is a valid array index.

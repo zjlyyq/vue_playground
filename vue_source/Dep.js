@@ -2,8 +2,10 @@
 /**
  * Dep 类: 专门用于依赖收集
  */
+let count = 0;
 export default class Dep {
   constructor() {
+    this.id = count ++;
     this.subs = [];
   }
 
