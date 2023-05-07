@@ -24,6 +24,22 @@ parseHTML(html, {
     console.log(tagName);
   }
   , chars(text) {
+    text = text.trim(); // 方法会从一个字符串的两端删除空白字符
+    if (text) {
+      const children = currentParent.children;
+      if (expression = parseText(text)) {
+        children.puah({
+          type: 2,
+          expression,
+          text
+        })
+      } else {
+        children.puah({
+          type: 3,
+          text
+        })
+      }
+    }
     // 每当解析到文本时，触发该函数 
     let element = {type: 3, text};
 
@@ -34,7 +50,36 @@ parseHTML(html, {
   }
 });
 
-
+/**
+ * 文本解析器。带变量文本被解析后返回一个expression
+ * "Hello {{name}}" ---》 "Hello "+_s(name)
+ */
+function parseText(text) {
+  const tagRE = /\{\{((?:.|\n)+?)\}\}/g;
+  if (!tagRE.test(text)) {
+    return;
+  }
+  const tokens = [];
+  tagRE.lastIndex = 0;  // exec在全局模式下返回下一个匹配项, 前面已经使用该国一次test，这里重新从第一位匹配
+  let match, index = 0, lastIndex = 0;
+  while(match = tagRE.exec(text)) { // exec在全局模式下返回下一个匹配项
+    index = match.index;
+    // console.log(match);
+    // 先把 {{ 前边的文本添加到tokens中
+    if (index > lastIndex) {
+      tokens.push(text.substring(lastIndex, index));
+    }
+    tokens.push(`_s(${match[1].trim()})`);
+    // 设置lastIndex来保证下一轮循环时，正则表达式不再重复匹配已经解析过的文本
+    lastIndex = index + match[0].length
+  }
+  // 当所有变量都处理完毕后，如果最后一个变量右边还有文本，就将文本添加到数组中
+  if (lastIndex < text.length) {
+    token.push(text.substring(lastIndex));
+  }
+  return tokens.join('+');
+}
+// parseText('hello {{a}}, {{v}}')
 function parseHTML(html, options) {
   while(html) {
     if (!lastTag && !isPlainTextElement(lastTag)) {
